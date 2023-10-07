@@ -1,6 +1,7 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 const module = TypeOrmModule.forRootAsync({
   imports: [ConfigModule],
@@ -14,6 +15,7 @@ const module = TypeOrmModule.forRootAsync({
     database: configService.get('DB_DATABASE'),
     synchronize: process.env.NODE_ENV !== 'production',
     autoLoadEntities: true,
+    namingStrategy: new SnakeNamingStrategy(),
   }),
   dataSourceFactory: async (options) => {
     const dataSource = await new DataSource(options).initialize();
