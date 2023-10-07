@@ -7,6 +7,8 @@ import {
   ArgumentsHost,
   Logger,
 } from '@nestjs/common';
+import { ApiJsonResult } from 'src/dto/api-json-result.dto';
+import { INTERNAL_SERVER_ERROR } from 'src/constants/error.const';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -33,11 +35,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     httpAdapter.reply(
       response,
-      {
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: '系统异常',
-        error: 'Internal Server Error',
-      },
+      ApiJsonResult.error(INTERNAL_SERVER_ERROR, '系统异常'),
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
