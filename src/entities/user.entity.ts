@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity } from './base.entity';
 
 export enum UserStatus {
   DISABLED = 0,
@@ -6,7 +7,7 @@ export enum UserStatus {
 }
 
 @Entity()
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
