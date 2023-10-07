@@ -5,10 +5,13 @@ import {
   HttpException,
   HttpStatus,
   ArgumentsHost,
+  Logger,
 } from '@nestjs/common';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(GlobalExceptionFilter.name);
+
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
@@ -16,6 +19,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
+
+    this.logger.error(exception);
 
     if (exception instanceof HttpException) {
       httpAdapter.reply(

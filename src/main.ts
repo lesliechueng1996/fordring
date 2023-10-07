@@ -1,9 +1,13 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './filters/global-exception.filter';
+import WinstonLogger from './configs/logger.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: WinstonLogger,
+    cors: true,
+  });
 
   const { httpAdapter }: { httpAdapter: HttpAdapterHost } =
     app.get(HttpAdapterHost);
