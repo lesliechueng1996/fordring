@@ -16,6 +16,8 @@ const module = TypeOrmModule.forRootAsync({
     synchronize: process.env.NODE_ENV !== 'production',
     autoLoadEntities: true,
     namingStrategy: new SnakeNamingStrategy(),
+    entityPrefix: 't_',
+    logging: 'all',
   }),
   dataSourceFactory: async (options) => {
     const dataSource = await new DataSource(options).initialize();
