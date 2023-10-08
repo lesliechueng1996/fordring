@@ -22,8 +22,10 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   // swagger
-  const document = SwaggerModule.createDocument(app, SwaggerConfig);
-  SwaggerModule.setup('api', app, document);
+  if (process.env.NODE_ENV === 'development') {
+    const document = SwaggerModule.createDocument(app, SwaggerConfig);
+    SwaggerModule.setup('api', app, document);
+  }
 
   // interceptors
   app.useGlobalInterceptors(
