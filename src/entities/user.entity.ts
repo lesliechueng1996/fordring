@@ -37,7 +37,7 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   lastErrorTime: Date | null;
 
-  @Column()
+  @Column({ default: 0 })
   errorCount: number;
 
   @Column({ length: 128, nullable: true })

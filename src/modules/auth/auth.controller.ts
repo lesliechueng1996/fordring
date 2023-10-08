@@ -8,6 +8,7 @@ import {
   ApiCreatedResponse,
   ApiExtraModels,
   ApiForbiddenResponse,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -30,6 +31,7 @@ export class AuthController {
   ) {}
 
   @Post('token')
+  @ApiOperation({ summary: '生成 token' })
   @ApiJsonResultResponse(GenerateTokenResDto)
   @ApiCreatedResponse({
     description: '获取 token 成功',

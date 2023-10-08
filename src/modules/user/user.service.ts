@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User, UserStatus } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
-import { validatePassword } from 'src/utils/password.util';
+import { encryptPassword, validatePassword } from 'src/utils/password.util';
 import { AUTH_ERROR } from 'src/constants/error.const';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
 
@@ -49,12 +49,13 @@ export class UserService {
       this.logger.error(`Invalid password: ${email}`);
 
       user.errorCount++;
-      this.updateUserErrorInfo(user, ip);
+      await this.updateUserErrorInfo(user, ip);
 
+      user.version++;
       if (user.errorCount >= MAX_ERROR_COUNT) {
         // Lock user
         this.logger.error(`Lock user: ${email}`);
-        this.lockUser(user);
+        await this.lockUser(user);
         throw new ForbiddenException(
           ApiJsonResult.error(AUTH_ERROR.LOCK_USER, 'Lock user'),
         );
@@ -69,25 +70,52 @@ export class UserService {
 
     // Success, reset error count, update last_login_time and last_login_ip
     this.logger.log(`Login success: ${email}`);
-    await this.usersRepository.update(user.id, {
-      errorCount: 0,
-      lastLoginTime: new Date(),
-      lastLoginIp: ip,
-    });
+    await this.usersRepository.update(
+      {
+        id: user.id,
+        version: user.version,
+      },
+      {
+        errorCount: 0,
+        lastLoginTime: new Date(),
+        lastLoginIp: ip,
+      },
+    );
     return user;
   }
 
   async updateUserErrorInfo(user: User, ip: string) {
-    await this.usersRepository.update(user.id, {
-      lastErrorTime: new Date(),
-      lastErrorIp: ip,
-      errorCount: user.errorCount,
-    });
+    await this.usersRepository.update(
+      {
+        id: user.id,
+        version: user.version,
+      },
+      {
+        lastErrorTime: new Date(),
+        lastErrorIp: ip,
+        errorCount: user.errorCount,
+      },
+    );
   }
 
   async lockUser(user: User) {
-    await this.usersRepository.update(user.id, {
-      status: UserStatus.DISABLED,
+    await this.usersRepository.update(
+      {
+        id: user.id,
+        version: user.version,
+      },
+      {
+        status: UserStatus.DISABLED,
+      },
+    );
+  }
+
+  async createUserByEmail(email: string, password: string, nickName: string) {
+    const encryptedPassword = await encryptPassword(password);
+    this.usersRepository.save({
+      email,
+      password: encryptedPassword,
+      nickName,
     });
   }
 }
