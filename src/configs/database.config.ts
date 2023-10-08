@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
-export default TypeOrmModule.forRootAsync({
+const databaseModule = TypeOrmModule.forRootAsync({
   imports: [ConfigModule],
   inject: [ConfigService],
   useFactory: (configService: ConfigService) => ({
@@ -24,3 +24,5 @@ export default TypeOrmModule.forRootAsync({
     return dataSource;
   },
 });
+
+export default databaseModule;

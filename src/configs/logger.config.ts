@@ -45,8 +45,8 @@ if (process.env.NODE_ENV !== 'production') {
   );
 }
 
-const logger = WinstonModule.createLogger({
+const loggerModule = WinstonModule.createLogger({
   transports: transportArray,
 });
 
-export default logger;
+export default loggerModule;
