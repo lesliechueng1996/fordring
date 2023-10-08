@@ -1,4 +1,12 @@
-import { Body, Controller, Ip, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Ip,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
 import {
   GenerateTokenReqDto,
   GenerateTokenResDto,
@@ -8,6 +16,8 @@ import {
   ApiCreatedResponse,
   ApiExtraModels,
   ApiForbiddenResponse,
+  ApiHeader,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -19,6 +29,8 @@ import {
   ApiJsonResult,
   ApiJsonResultResponse,
 } from 'src/dto/api-json-result.dto';
+
+const REFRESH_TOKEN_HEADER_KEY = 'Refresh-Token';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -58,5 +70,37 @@ export class AuthController {
       accessToken,
       refreshToken,
     };
+  }
+
+  @Get('refresh-token')
+  @ApiHeader({ name: REFRESH_TOKEN_HEADER_KEY, description: '刷新 token' })
+  @ApiOperation({ summary: '刷新 token' })
+  @ApiJsonResultResponse(GenerateTokenResDto)
+  @ApiOkResponse({
+    description: '刷新 token 成功',
+  })
+  @ApiUnauthorizedResponse({
+    description: `code - ${AUTH_ERROR.INVALID_REFRESH_TOKEN}: refresh token 无效`,
+  })
+  async refreshToken(
+    @Headers(REFRESH_TOKEN_HEADER_KEY)
+    refreshToken: string,
+  ): Promise<GenerateTokenResDto> {
+    const { isValid, id } =
+      await this.authService.validateRefreshToken(refreshToken);
+
+    if (!isValid) {
+      throw new UnauthorizedException(
+        ApiJsonResult.error(
+          AUTH_ERROR.INVALID_REFRESH_TOKEN,
+          'Invalid refresh token',
+        ),
+      );
+    }
+
+    const user = await this.userService.getUserById(id);
+
+    const result = await this.authService.generateJwtToken(user);
+    return result;
   }
 }

@@ -118,4 +118,8 @@ export class UserService {
       nickName,
     });
   }
+
+  async getUserById(id: string) {
+    return await this.usersRepository.findOneBy({ id });
+  }
 }

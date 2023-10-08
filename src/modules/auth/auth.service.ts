@@ -58,18 +58,31 @@ export class AuthService {
     }
   }
 
-  async verifyRefreshToken(refreshToken: string) {
+  async validateRefreshToken(refreshToken: string) {
     const payload = await this.decodeJwtToken(refreshToken);
     if (!payload) {
-      return false;
+      return {
+        isValid: false,
+        id: null,
+      };
     }
     const { id } = payload;
     const cachedRefreshToken = await this.cacheManger.get(
       `${REFRESH_TOKEN_PREFIX}${id}`,
     );
     if (cachedRefreshToken !== refreshToken) {
-      return false;
+      this.logger.error(
+        `Invalid refresh token, refreshToken: ${refreshToken}, cachedRefreshToken: ${cachedRefreshToken}`,
+      );
+      return {
+        isValid: false,
+        id: null,
+      };
     }
-    return true;
+    this.logger.log(`Valid refresh token for user ${id}`);
+    return {
+      isValid: true,
+      id: payload.id,
+    };
   }
 }
