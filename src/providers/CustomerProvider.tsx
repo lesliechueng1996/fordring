@@ -1,16 +1,16 @@
 import { PrimeReactProvider } from 'primereact/api';
 import ToastProvider from './ToastProvider';
 import AuthProvider from './AuthProvider';
+import { RouterProvider } from 'react-router-dom';
+import router from '../router';
 
-type Props = {
-  children: React.ReactNode;
-};
-
-const CustomerProvider = ({ children }: Props) => {
+const CustomerProvider = () => {
   return (
     <PrimeReactProvider value={{ ripple: true }}>
       <ToastProvider>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </ToastProvider>
     </PrimeReactProvider>
   );

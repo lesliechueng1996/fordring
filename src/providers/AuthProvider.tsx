@@ -68,7 +68,6 @@ const AuthProvider = ({ children }: Props) => {
   const isLogin = () => !!state || !isTokenExpired(refreshToken() || '');
 
   const cacheTokenStore = useCallback(() => {
-    console.log('save token', state);
     localStorage.setItem(TOKEN_STORE_CACHE_KEY, JSON.stringify(state));
   }, [state]);
 
