@@ -1,4 +1,7 @@
-export function decodeJwt(token: string) {
+export function decodeJwt(token: string | null | undefined) {
+  if (!token) {
+    return null;
+  }
   const payload = JSON.parse(atob(token.split('.')[1]));
   return payload;
 }

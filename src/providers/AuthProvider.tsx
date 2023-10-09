@@ -1,11 +1,23 @@
 import { ReactNode, createContext, useReducer, useCallback, useEffect } from 'react';
-import { isTokenExpired } from '../utils/jwt';
+import { isTokenExpired, decodeJwt } from '../utils/jwt';
+
+type JwtPayload = {
+  id: string;
+  nickName: string;
+  avatarUrl: string | null;
+  iat: number;
+  exp: number;
+};
 
 type AuthContextType = {
   setTokenStore: (tokenStore: TokenStore) => void;
-  accessToken: () => string | null;
-  refreshToken: () => string | null;
-  isLogin: () => boolean;
+  accessToken: string | null;
+  refreshToken: string | null;
+  isLogin: boolean;
+  payload: JwtPayload | null;
+  avatarUrl: string | null;
+  nickName: string | null;
+  clearTokenStore: () => void;
 };
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -31,18 +43,25 @@ type Props = {
 
 enum Action {
   SET_TOKEN_STORE,
+  CLEAR_TOKEN_STORE,
 }
 
-type TokenStoreAction = {
-  type: Action;
-  payload: TokenStore;
-};
+type TokenStoreAction =
+  | {
+      type: Action.SET_TOKEN_STORE;
+      payload: TokenStore;
+    }
+  | {
+      type: Action.CLEAR_TOKEN_STORE;
+    };
 
 const reducer = (state: TokenStore | null, action: TokenStoreAction): TokenStore | null => {
-  const { type, payload } = action;
+  const { type } = action;
   switch (type) {
     case Action.SET_TOKEN_STORE:
-      return payload;
+      return action.payload;
+    case Action.CLEAR_TOKEN_STORE:
+      return null;
     default:
       return state;
   }
@@ -61,11 +80,23 @@ const AuthProvider = ({ children }: Props) => {
     [dispatch]
   );
 
-  const accessToken = () => state?.accessToken || null;
+  const accessToken = state?.accessToken || null;
 
-  const refreshToken = () => state?.refreshToken || null;
+  const refreshToken = state?.refreshToken || null;
 
-  const isLogin = () => !!state || !isTokenExpired(refreshToken() || '');
+  const isLogin = !!state || !isTokenExpired(refreshToken);
+
+  const payload: JwtPayload | null = decodeJwt(accessToken);
+
+  const avatarUrl = payload?.avatarUrl || null;
+
+  const nickName = payload?.nickName || null;
+
+  const clearTokenStore = useCallback(() => {
+    dispatch({
+      type: Action.CLEAR_TOKEN_STORE,
+    });
+  }, [dispatch]);
 
   const cacheTokenStore = useCallback(() => {
     localStorage.setItem(TOKEN_STORE_CACHE_KEY, JSON.stringify(state));
@@ -85,6 +116,10 @@ const AuthProvider = ({ children }: Props) => {
         accessToken,
         refreshToken,
         isLogin,
+        payload,
+        avatarUrl,
+        nickName,
+        clearTokenStore,
       }}
     >
       {children}

@@ -5,7 +5,7 @@ import MainPage from './pages/MainPage';
 function App() {
   const { isLogin } = useAuth();
 
-  return <div>{isLogin() ? <MainPage /> : <LoginPage />}</div>;
+  return <div>{isLogin ? <MainPage /> : <LoginPage />}</div>;
 }
 
 export default App;

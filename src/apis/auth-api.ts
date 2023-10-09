@@ -26,3 +26,12 @@ export async function retrieveToken(email: string, password: string): Promise<Ap
     return INTERNAL_ERROR;
   }
 }
+
+export async function logout(token: string) {
+  await fetch(`${BASE_URL}/auth/token`, {
+    method: 'DELETE',
+    headers: {
+      Authentication: `Bearer ${token}`,
+    },
+  });
+}

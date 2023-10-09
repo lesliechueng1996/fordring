@@ -3,8 +3,8 @@ import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import { FormEventHandler } from 'react';
 import useToast from '../hooks/useToast';
-import { retrieveToken, USER_NOT_FOUND, USER_DISABLE, INVALID_PASSWORD, LOCK_USER } from '../apis/login-api';
-import type { GenerateTokenRes } from '../apis/login-api';
+import { retrieveToken, USER_NOT_FOUND, USER_DISABLE, INVALID_PASSWORD, LOCK_USER } from '../apis/auth-api';
+import type { GenerateTokenRes } from '../apis/auth-api';
 import { API_OK } from '../apis/http-request';
 import useAuth from '../hooks/useAuth';
 
@@ -51,7 +51,7 @@ function LoginPage() {
   return (
     <div className="w-screen h-screen bg-[url('/images/background.jpg')] bg-center bg-no-repeat bg-cover flex justify-end">
       <div className="w-1/2 h-full flex flex-col justify-center items-center">
-        <div className="w-1/2 bg-white/70 p-10 rounded-md flex flex-col items-center gap-8">
+        <div className="w-1/2 max-w-lg bg-white/70 p-10 rounded-md flex flex-col items-center gap-8">
           <h1 className="text-white">Fordring Blog</h1>
           <form className="space-y-8 w-full" onSubmit={onSubmit}>
             <div>
