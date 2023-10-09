@@ -8,6 +8,7 @@ import {
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { AUTHENTICATION, USER_ID_KEY } from 'src/constants/fordring.const';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -24,7 +25,8 @@ export class LoggingInterceptor implements NestInterceptor {
   Start to handle ${className}.${methodName}
   Url: ${path}
   Method: ${method}
-  Authentication: ${request.get('Authentication')}
+  Authentication: ${request.get(AUTHENTICATION)}
+  UserId: ${request[USER_ID_KEY]}
   Params: ${JSON.stringify(params)}
   Query: ${JSON.stringify(query)}
   Request Body: ${JSON.stringify(body)} 
