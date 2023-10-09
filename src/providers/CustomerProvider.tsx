@@ -1,5 +1,6 @@
 import { PrimeReactProvider } from 'primereact/api';
 import ToastProvider from './ToastProvider';
+import AuthProvider from './AuthProvider';
 
 type Props = {
   children: React.ReactNode;
@@ -8,7 +9,9 @@ type Props = {
 const CustomerProvider = ({ children }: Props) => {
   return (
     <PrimeReactProvider value={{ ripple: true }}>
-      <ToastProvider>{children}</ToastProvider>
+      <ToastProvider>
+        <AuthProvider>{children}</AuthProvider>
+      </ToastProvider>
     </PrimeReactProvider>
   );
 };

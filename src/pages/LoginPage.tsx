@@ -3,11 +3,16 @@ import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import { FormEventHandler } from 'react';
 import useToast from '../hooks/useToast';
+import { retrieveToken, USER_NOT_FOUND, USER_DISABLE, INVALID_PASSWORD, LOCK_USER } from '../apis/login-api';
+import type { GenerateTokenRes } from '../apis/login-api';
+import { API_OK } from '../apis/http-request';
+import useAuth from '../hooks/useAuth';
 
 function LoginPage() {
-  const { warn } = useToast();
+  const { warn, error } = useToast();
+  const { setTokenStore } = useAuth();
 
-  const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
+  const onSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     const email = e.currentTarget.email.value;
     const password = e.currentTarget.password.value;
@@ -23,6 +28,23 @@ function LoginPage() {
     if (!password) {
       warn('请输入密码');
       return;
+    }
+
+    const res: ApiJsonResult<unknown> = await retrieveToken(email, password);
+    if (res.code === API_OK) {
+      const tokenStore = res.data as GenerateTokenRes;
+      setTokenStore(tokenStore);
+    } else if (res.code === USER_NOT_FOUND) {
+      error('用户不存在');
+    } else if (res.code === USER_DISABLE) {
+      error('用户已锁定');
+    } else if (res.code === INVALID_PASSWORD) {
+      const { count } = res.data as { count: number };
+      error(`密码错误，还有${count}次机会`);
+    } else if (res.code === LOCK_USER) {
+      error('密码错误，用户已锁定');
+    } else {
+      error(res.message);
     }
   };
 
@@ -46,10 +68,7 @@ function LoginPage() {
                   className="w-full"
                   inputClassName="w-full text-lg"
                   toggleMask
-                  promptLabel="请输入密码"
-                  weakLabel="弱"
-                  mediumLabel="中"
-                  strongLabel="强"
+                  feedback={false}
                 />
                 <label htmlFor="password">密码</label>
               </span>
