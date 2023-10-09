@@ -85,4 +85,9 @@ export class AuthService {
       id: payload.id,
     };
   }
+
+  async removeRefreshToken(id: string) {
+    await this.cacheManger.del(`${REFRESH_TOKEN_PREFIX}${id}`);
+    this.logger.log(`Removed refresh token for user ${id}`);
+  }
 }

@@ -1,11 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   Ip,
   Post,
+  Req,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import {
   GenerateTokenReqDto,
@@ -29,6 +32,9 @@ import {
   ApiJsonResult,
   ApiJsonResultResponse,
 } from 'src/dto/api-json-result.dto';
+import { AUTHENTICATION, USER_ID_KEY } from 'src/constants/fordring.const';
+import { Request } from 'express';
+import { AuthGuard } from 'src/guards/AuthGuard';
 
 const REFRESH_TOKEN_HEADER_KEY = 'Refresh-Token';
 
@@ -102,5 +108,17 @@ export class AuthController {
 
     const result = await this.authService.generateJwtToken(user);
     return result;
+  }
+
+  @Delete('token')
+  @ApiHeader({ name: AUTHENTICATION, description: 'token' })
+  @ApiOperation({ summary: '注销 token' })
+  @ApiOkResponse({
+    description: '注销 token 成功',
+  })
+  @UseGuards(AuthGuard)
+  async logout(@Req() req: Request) {
+    const userId: string = req[USER_ID_KEY];
+    await this.authService.removeRefreshToken(userId);
   }
 }
