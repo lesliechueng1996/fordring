@@ -14,8 +14,9 @@ function LoginPage() {
 
   const onSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    const email = e.currentTarget.email.value;
-    const password = e.currentTarget.password.value;
+    const form = e.target as HTMLFormElement;
+    const email = form.email.value;
+    const password = form.password.value;
     if (!email) {
       warn('请输入邮箱');
       return;
