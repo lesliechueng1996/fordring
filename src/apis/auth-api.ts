@@ -35,3 +35,22 @@ export async function logout(token: string) {
     },
   });
 }
+
+export async function refreshToken(refreshToken: string) {
+  try {
+    const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
+      headers: {
+        'Refresh-Token': refreshToken,
+      },
+    });
+    const { code, message, data }: ApiJsonResult<unknown> = await res.json();
+    if (res.ok) {
+      return data as GenerateTokenRes;
+    }
+    console.error(`Refresh token failed, status: ${res.status}, [${code}] ${message}`);
+    return null;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}

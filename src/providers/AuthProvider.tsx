@@ -1,5 +1,6 @@
 import { ReactNode, createContext, useReducer, useCallback, useEffect } from 'react';
 import { isTokenExpired, decodeJwt } from '../utils/jwt';
+import { tokenStore as apiTokenStore } from '../apis/http-request';
 
 type JwtPayload = {
   id: string;
@@ -97,6 +98,11 @@ const AuthProvider = ({ children }: Props) => {
       type: Action.CLEAR_TOKEN_STORE,
     });
   }, [dispatch]);
+
+  apiTokenStore.accessToken = accessToken;
+  apiTokenStore.refreshToken = refreshToken;
+  apiTokenStore.setTokenStore = setTokenStore;
+  apiTokenStore.clearTokenStore = clearTokenStore;
 
   const cacheTokenStore = useCallback(() => {
     localStorage.setItem(TOKEN_STORE_CACHE_KEY, JSON.stringify(state));
