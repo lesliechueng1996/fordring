@@ -4,6 +4,8 @@ import { CATEGORY_ERROR } from 'src/constants/error.const';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
 import { Category } from 'src/entities/category.entity';
 import { Repository } from 'typeorm';
+import { PageCategoryReqDto } from './dto/page-category.dto';
+import { withPageAndOrderQuery } from 'src/utils/query-builder.util';
 
 @Injectable()
 export class CategoryService {
@@ -37,5 +39,41 @@ export class CategoryService {
         'Create category failed',
       );
     }
+  }
+
+  async searchCategoriesByPage(query: PageCategoryReqDto) {
+    const { categoryName, currentPage, pageSize, sortField, sortOrder } = query;
+
+    let queryBuilder = this.categoryRepository.createQueryBuilder();
+    if (categoryName) {
+      queryBuilder = queryBuilder.where('categoryName like :categoryName', {
+        categoryName: `%${categoryName}%`,
+      });
+    }
+
+    const countQueryBuilder = queryBuilder.clone();
+
+    queryBuilder = withPageAndOrderQuery(
+      queryBuilder,
+      currentPage,
+      pageSize,
+      sortField,
+      sortOrder,
+    );
+
+    const categoryList = await queryBuilder.getMany();
+    const total = await countQueryBuilder.getCount();
+
+    const list = categoryList.map((category) => ({
+      id: category.id,
+      categoryName: category.categoryName,
+      createTime: category.createTime.getTime(),
+      version: category.version,
+    }));
+
+    return {
+      list,
+      total,
+    };
   }
 }
