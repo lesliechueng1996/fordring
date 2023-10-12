@@ -31,6 +31,7 @@ function CategoryForm({ title, submitText, initData, isPending, onFormSubmit }: 
             name="categoryName"
             className="w-full"
             defaultValue={initData.categoryName}
+            autoFocus
           />
           <label htmlFor="formCategoryName">类别名</label>
         </span>

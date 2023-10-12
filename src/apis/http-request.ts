@@ -42,6 +42,14 @@ export function sendOneRequest(url: string, options: RequestInit): Promise<ApiJs
         resolve(json);
         return;
       }
+      if (res.status === 400) {
+        reject({
+          status: res.status,
+          ...json,
+          message: '请求参数错误',
+        });
+        return;
+      }
       reject({
         status: res.status,
         ...json,

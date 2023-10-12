@@ -22,7 +22,7 @@ function Header() {
   ];
 
   return (
-    <header className="h-16 shadow flex justify-between items-center px-5">
+    <header className="h-16 shadow flex justify-between items-center px-5 shrink-0">
       <div className="flex items-center gap-2">
         <img src="vite.svg" alt="Logo" />
         <span className="text-xl font-bold">Fordring Blog Console</span>

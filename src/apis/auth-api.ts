@@ -38,6 +38,7 @@ export async function logout(token: string) {
 
 export async function refreshToken(refreshToken: string) {
   try {
+    console.log('Real start to refresh token');
     const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
       headers: {
         'Refresh-Token': refreshToken,
