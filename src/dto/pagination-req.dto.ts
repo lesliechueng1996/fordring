@@ -36,6 +36,6 @@ export class PaginationReqDto {
     enum: ['ASC', 'DESC'],
   })
   @IsEnum(['ASC', 'DESC'])
-  @ValidateIf((o) => !!o)
+  @ValidateIf((o) => !o)
   sortOrder: 'ASC' | 'DESC' | '' | undefined | null;
 }

@@ -46,7 +46,7 @@ export class CategoryService {
 
     let queryBuilder = this.categoryRepository.createQueryBuilder();
     if (categoryName) {
-      queryBuilder = queryBuilder.where('categoryName like :categoryName', {
+      queryBuilder = queryBuilder.where('category_name like :categoryName', {
         categoryName: `%${categoryName}%`,
       });
     }
@@ -75,5 +75,9 @@ export class CategoryService {
       list,
       total,
     };
+  }
+
+  async deleteCategory(id: number) {
+    await this.categoryRepository.delete(id);
   }
 }
