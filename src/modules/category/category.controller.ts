@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { AuthGuard } from 'src/guards/AuthGuard';
 import {
@@ -6,6 +15,7 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiExtraModels,
+  ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -19,10 +29,12 @@ import {
   PageCategoryReqDto,
   PageCategoryResDto,
 } from './dto/page-category.dto';
+import { AUTHENTICATION } from 'src/constants/fordring.const';
 
 @Controller('category')
 @UseGuards(AuthGuard)
 @ApiTags('Category')
+@ApiHeader({ name: AUTHENTICATION, description: 'token' })
 @ApiExtraModels(ApiJsonResult)
 @ApiBadRequestResponse({ description: '参数错误' })
 export class CategoryController {
@@ -40,7 +52,7 @@ export class CategoryController {
     await this.categoryService.createCategory(body.categoryName);
   }
 
-  @Get()
+  @Get('page')
   @ApiOperation({ summary: '获取分类列表' })
   @ApiOkResponse({
     description: '获取分类列表成功',
@@ -50,5 +62,14 @@ export class CategoryController {
     @Query() query: PageCategoryReqDto,
   ): Promise<PageCategoryResDto> {
     return await this.categoryService.searchCategoriesByPage(query);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: '删除分类' })
+  @ApiOkResponse({
+    description: '删除分类成功',
+  })
+  async deleteCategory(@Param('id') id: number) {
+    await this.categoryService.deleteCategory(id);
   }
 }
