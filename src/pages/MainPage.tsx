@@ -3,6 +3,8 @@ import AsideMenu from '../components/AsideMenu';
 import Header from '../components/Header';
 
 function MainPage() {
+  console.log('MainPage render');
+
   return (
     <div className="w-screen h-screen flex flex-col">
       <Header />

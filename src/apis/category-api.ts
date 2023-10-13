@@ -3,6 +3,8 @@ import qs from 'qs';
 
 export const CATEGORY_ALREADY_EXIST = 20001;
 export const CREATE_CATEGORY_FAILED = 20002;
+export const CATEGORY_NOT_FOUND = 20003;
+export const CATEGORY_VERSION_CONFLICT = 20004;
 
 export async function createCategory(categoryName: string): Promise<ApiJsonResult<unknown>> {
   try {
@@ -46,7 +48,7 @@ export async function searchCategoryByPage(
     const data = await sendRequest(`/category/page?${queryString}`);
     return data as ApiJsonResult<CategoryPageData>;
   } catch (e) {
-    return e as ApiJsonResult<null>;
+    return e as ApiJsonResult<unknown>;
   }
 }
 
@@ -58,5 +60,26 @@ export async function deleteCategoryById(id: number) {
     return data;
   } catch (e) {
     return e as ApiJsonResult<null>;
+  }
+}
+
+export async function getCategoryById(id: number) {
+  try {
+    const data = await sendRequest(`/category/${id}`);
+    return data;
+  } catch (e) {
+    return e as ApiJsonResult<unknown>;
+  }
+}
+
+export async function updateCategory(id: number, categoryName: string, version: number) {
+  try {
+    const data = await sendRequest(`/category/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ categoryName, version }),
+    });
+    return data;
+  } catch (e) {
+    return e as ApiJsonResult<unknown>;
   }
 }

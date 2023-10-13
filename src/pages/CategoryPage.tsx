@@ -18,6 +18,8 @@ const createTimeBodyTemplate = (rowData: CategoryPageItem) => {
 };
 
 function CategoryPage() {
+  console.log('CategoryPage render');
+
   const {
     search,
     isLoading,
@@ -38,15 +40,23 @@ function CategoryPage() {
     edit: false,
   });
 
-  useMount(() => search(categoryName));
+  const [editId, setEditId] = useState<number | null>(null);
+
+  useMount(() => search());
 
   const showCreateSidebar = () => setShowSidebar({ ...showSidebar, create: true });
 
-  // const showEditSidebar = () => setShowSidebar({ ...showSidebar, edit: true });
+  const showEditSidebar = (editId: number) => {
+    setEditId(editId);
+    setShowSidebar({ ...showSidebar, edit: true });
+  };
 
   const hideCreateSidebar = () => setShowSidebar({ ...showSidebar, create: false });
 
-  const hideEditSidebar = () => setShowSidebar({ ...showSidebar, edit: false });
+  const hideEditSidebar = () => {
+    setEditId(null);
+    setShowSidebar({ ...showSidebar, edit: false });
+  };
 
   const confirmDelete: (rowData: CategoryPageItem) => MouseEventHandler<HTMLButtonElement> =
     (rowData: CategoryPageItem) => (event) => {
@@ -66,7 +76,7 @@ function CategoryPage() {
   const actionBodyTemplate = (rowData: CategoryPageItem) => {
     return (
       <div className="space-x-3">
-        <Button label="编辑" severity="help" />
+        <Button label="编辑" severity="help" onClick={() => showEditSidebar(rowData.id)} />
         <Button label="删除" severity="danger" onClick={confirmDelete(rowData)} />
       </div>
     );
@@ -86,7 +96,7 @@ function CategoryPage() {
             <label htmlFor="categoryName">类别名</label>
           </span>
 
-          <Button label="搜索" icon="pi pi-search" loading={isLoading} onClick={() => search(categoryName)} />
+          <Button label="搜索" icon="pi pi-search" loading={isLoading} onClick={() => search()} />
           <Button label="清除" icon="pi pi-filter-slash" severity="warning" onClick={clear} />
         </div>
 
@@ -124,13 +134,19 @@ function CategoryPage() {
         <CreateCategory
           onSuccess={() => {
             hideCreateSidebar();
-            search(categoryName);
+            search();
           }}
         />
       </Sidebar>
 
-      <Sidebar visible={showSidebar.edit} onHide={hideEditSidebar}>
-        <EditCategory />
+      <Sidebar visible={showSidebar.edit && editId !== null} onHide={hideEditSidebar}>
+        <EditCategory
+          id={editId!}
+          onSuccess={() => {
+            hideEditSidebar();
+            search();
+          }}
+        />
       </Sidebar>
 
       <ConfirmPopup />

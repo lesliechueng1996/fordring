@@ -48,7 +48,6 @@ function useCategory() {
     sortOrder: SortOrder
   ) => {
     setIsLoading(true);
-    setCategoryName(categoryName);
     setSearchParams(changeValueToStr({ categoryName, currentPage, pageSize, sortField, sortOrder }));
     searchCategoryByPage(categoryName, currentPage, pageSize, sortField, sortOrderToStr(sortOrder))
       .then((res) => {
@@ -64,7 +63,7 @@ function useCategory() {
       });
   };
 
-  const search = (categoryName: string) => {
+  const search = () => {
     _search(categoryName, currentPage, pageSize, sortField || '', sortOrder);
   };
 
@@ -81,13 +80,13 @@ function useCategory() {
 
   const clear = () => {
     setCategoryName('');
-    search('');
+    _search('', currentPage, pageSize, sortField || '', sortOrder);
   };
 
   const deleteCategory = (id: number) => {
     deleteCategoryById(id).then((res) => {
       if (res.code === API_OK) {
-        search(categoryName);
+        search();
       } else {
         error(res.message);
       }
