@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CATEGORY_ERROR } from 'src/constants/error.const';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
@@ -13,6 +13,8 @@ export class CategoryService {
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
   ) {}
+
+  private readonly logger: Logger = new Logger(CategoryService.name);
 
   async countByCategoryName(categoryName: string) {
     return await this.categoryRepository.countBy({ categoryName });
@@ -79,5 +81,33 @@ export class CategoryService {
 
   async deleteCategory(id: number) {
     await this.categoryRepository.delete(id);
+  }
+
+  getCategoryById(id: number) {
+    return this.categoryRepository.findOneBy({
+      id,
+    });
+  }
+
+  async updateCategory(id: number, categoryName: string, version: number) {
+    const result = await this.categoryRepository.update(
+      {
+        id,
+        version,
+      },
+      {
+        categoryName,
+      },
+    );
+    if (result.affected === 0) {
+      this.logger.error(`Category version conflict, id: ${id}`);
+
+      throw new ConflictException(
+        ApiJsonResult.error(
+          CATEGORY_ERROR.CATEGORY_VERSION_CONFLICT,
+          'Category version conflict',
+        ),
+      );
+    }
   }
 }

@@ -5,8 +5,10 @@ import {
   Get,
   Param,
   Post,
+  Patch,
   Query,
   UseGuards,
+  NotFoundException,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { AuthGuard } from 'src/guards/AuthGuard';
@@ -30,6 +32,9 @@ import {
   PageCategoryResDto,
 } from './dto/page-category.dto';
 import { AUTHENTICATION } from 'src/constants/fordring.const';
+import { GetCategoryResDto } from './dto/get-category.dto';
+import { UpdateCategoryReqDto } from './dto/update-category.dto';
+import { CATEGORY_ERROR } from 'src/constants/error.const';
 
 @Controller('category')
 @UseGuards(AuthGuard)
@@ -71,5 +76,40 @@ export class CategoryController {
   })
   async deleteCategory(@Param('id') id: number) {
     await this.categoryService.deleteCategory(id);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: '根据id获取分类' })
+  @ApiOkResponse({
+    description: '根据id获取分类成功',
+  })
+  @ApiJsonResultResponse(GetCategoryResDto)
+  async getCategoryById(@Param('id') id: number) {
+    const category = await this.categoryService.getCategoryById(id);
+    if (!category) {
+      throw new NotFoundException(
+        ApiJsonResult.error(
+          CATEGORY_ERROR.CATEGORY_NOT_FOUND,
+          'Category not found',
+        ),
+      );
+    }
+    return new GetCategoryResDto(category);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: '更新分类' })
+  @ApiOkResponse({
+    description: '更新分类成功',
+  })
+  @ApiConflictResponse({
+    description: '分类更新冲突',
+  })
+  async updateCategory(
+    @Param('id') id: number,
+    @Body() body: UpdateCategoryReqDto,
+  ) {
+    const { categoryName, version } = body;
+    await this.categoryService.updateCategory(id, categoryName, version);
   }
 }
