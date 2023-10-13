@@ -16,11 +16,7 @@ export class CategoryService {
 
   private readonly logger: Logger = new Logger(CategoryService.name);
 
-  async countByCategoryName(categoryName: string) {
-    return await this.categoryRepository.countBy({ categoryName });
-  }
-
-  async createCategory(categoryName: string) {
+  async isCategoryNameExist(categoryName: string) {
     const count = await this.countByCategoryName(categoryName);
     if (count > 0) {
       throw new ConflictException(
@@ -30,6 +26,14 @@ export class CategoryService {
         ),
       );
     }
+  }
+
+  async countByCategoryName(categoryName: string) {
+    return await this.categoryRepository.countBy({ categoryName });
+  }
+
+  async createCategory(categoryName: string) {
+    await this.isCategoryNameExist(categoryName);
 
     try {
       await this.categoryRepository.insert({
@@ -90,15 +94,28 @@ export class CategoryService {
   }
 
   async updateCategory(id: number, categoryName: string, version: number) {
-    const result = await this.categoryRepository.update(
-      {
-        id,
-        version,
-      },
-      {
-        categoryName,
-      },
-    );
+    await this.isCategoryNameExist(categoryName);
+
+    let result;
+    try {
+      result = await this.categoryRepository.update(
+        {
+          id,
+          version,
+        },
+        {
+          categoryName,
+        },
+      );
+    } catch (e) {
+      this.logger.error(`Update category failed, id: ${id}`);
+
+      throw ApiJsonResult.error(
+        CATEGORY_ERROR.UPDATE_CATEGORY_FAILED,
+        'Update category failed',
+      );
+    }
+
     if (result.affected === 0) {
       this.logger.error(`Category version conflict, id: ${id}`);
 
