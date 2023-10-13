@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 
 @Entity()
-export class AlbumEntity extends BaseEntity {
+export class Album extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -10,7 +10,13 @@ export class AlbumEntity extends BaseEntity {
     length: 16,
     unique: true,
   })
-  name: string;
+  displayName: string;
+
+  @Column({
+    length: 32,
+    unique: true,
+  })
+  folderName: string;
 
   @Column({
     length: 256,
