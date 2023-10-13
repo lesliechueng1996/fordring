@@ -1,12 +1,7 @@
 import { FormEventHandler, useState } from 'react';
 import CategoryForm from './CategoryForm';
 import useMount from '../../hooks/useMount';
-import {
-  CATEGORY_NOT_FOUND,
-  CATEGORY_VERSION_CONFLICT,
-  getCategoryById,
-  updateCategory,
-} from '../../apis/category-api';
+import { getErrorMsg, getCategoryById, updateCategory } from '../../apis/category-api';
 import useToast from '../../hooks/useToast';
 import { API_OK } from '../../apis/http-request';
 
@@ -54,12 +49,8 @@ function EditCategory({ id, onSuccess }: Props) {
         if (res.code === API_OK) {
           success('保存分类成功');
           onSuccess();
-        } else if (res.code === CATEGORY_NOT_FOUND) {
-          error('分类不存在');
-        } else if (res.code === CATEGORY_VERSION_CONFLICT) {
-          error('分类信息已过期，请刷新页面后重试');
         } else {
-          error('保存分类失败');
+          error(getErrorMsg(res.code));
         }
       })
       .finally(() => setIsPending(false));

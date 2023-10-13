@@ -1,10 +1,26 @@
 import { sendRequest } from './http-request';
 import qs from 'qs';
 
-export const CATEGORY_ALREADY_EXIST = 20001;
-export const CREATE_CATEGORY_FAILED = 20002;
-export const CATEGORY_NOT_FOUND = 20003;
-export const CATEGORY_VERSION_CONFLICT = 20004;
+const CATEGORY_ALREADY_EXIST = 20001;
+const CREATE_CATEGORY_FAILED = 20002;
+const CATEGORY_NOT_FOUND = 20003;
+const CATEGORY_VERSION_CONFLICT = 20004;
+const UPDATE_CATEGORY_FAILED = 20005;
+
+const ERROR_MSG_MAP: {
+  [key: number]: string;
+} = {
+  [CATEGORY_ALREADY_EXIST]: '分类已存在',
+  [CREATE_CATEGORY_FAILED]: '创建分类失败',
+  [CATEGORY_NOT_FOUND]: '分类不存在',
+  [CATEGORY_VERSION_CONFLICT]: '分类信息已过期，请刷新页面后重试',
+  [UPDATE_CATEGORY_FAILED]: '更新分类失败',
+};
+
+export function getErrorMsg(code: number) {
+  const msg = ERROR_MSG_MAP[code];
+  return msg || '未知错误';
+}
 
 export async function createCategory(categoryName: string): Promise<ApiJsonResult<unknown>> {
   try {

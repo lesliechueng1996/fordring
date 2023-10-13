@@ -30,6 +30,7 @@ function CategoryForm({ title, submitText, initData, isPending, onFormSubmit }: 
             id="formCategoryName"
             name="categoryName"
             className="w-full"
+            maxLength={32}
             defaultValue={initData.categoryName}
             autoFocus
           />

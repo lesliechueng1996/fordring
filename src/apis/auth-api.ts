@@ -1,9 +1,23 @@
 import { BASE_URL, INTERNAL_ERROR } from './http-request';
 
-export const USER_NOT_FOUND = 10001;
-export const USER_DISABLE = 10002;
+const USER_NOT_FOUND = 10001;
+const USER_DISABLE = 10002;
 export const INVALID_PASSWORD = 10003;
-export const LOCK_USER = 10004;
+const LOCK_USER = 10004;
+
+const ERROR_MSG_MAP: {
+  [key: number]: string;
+} = {
+  [USER_NOT_FOUND]: '用户不存在',
+  [USER_DISABLE]: '用户已被禁用',
+  [INVALID_PASSWORD]: '密码错误',
+  [LOCK_USER]: '密码错误，用户已锁定',
+};
+
+export function getErrorMsg(code: number) {
+  const msg = ERROR_MSG_MAP[code];
+  return msg || '未知错误';
+}
 
 export type GenerateTokenRes = {
   accessToken: string;

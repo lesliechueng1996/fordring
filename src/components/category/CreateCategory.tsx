@@ -1,6 +1,6 @@
 import { FormEventHandler, useState } from 'react';
 import CategoryForm from './CategoryForm';
-import { createCategory, CREATE_CATEGORY_FAILED, CATEGORY_ALREADY_EXIST } from '../../apis/category-api';
+import { createCategory, getErrorMsg } from '../../apis/category-api';
 import useToast from '../../hooks/useToast';
 import { API_OK } from '../../apis/http-request';
 
@@ -26,12 +26,8 @@ function CreateCategory({ onSuccess }: Props) {
       if (res.code === API_OK) {
         success('创建分类成功');
         onSuccess();
-      } else if (res.code === CATEGORY_ALREADY_EXIST) {
-        error('分类已存在');
-      } else if (res.code === CREATE_CATEGORY_FAILED) {
-        error('创建分类失败');
       } else {
-        error('未知错误');
+        error(getErrorMsg(res.code));
       }
     } finally {
       setIsPending(false);
