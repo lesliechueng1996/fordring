@@ -6,6 +6,7 @@ export const ALBUM_CREATE_FAILED = 30003;
 export const ALBUM_NOT_FOUND = 30004;
 export const ALBUM_VERSION_CONFLICT = 30005;
 export const UPDATE_ALBUM_FAILED = 30006;
+export const ALBUM_HAS_PICTURE = 30007;
 
 const ERROR_MESSAGE_MAP: {
   [key: number]: string;
@@ -16,6 +17,7 @@ const ERROR_MESSAGE_MAP: {
   [ALBUM_NOT_FOUND]: '图册不存在',
   [ALBUM_VERSION_CONFLICT]: '图册版本冲突',
   [UPDATE_ALBUM_FAILED]: '图册更新失败',
+  [ALBUM_HAS_PICTURE]: '图册中存在图片，无法删除',
 };
 
 export const getErrorMessage = (code: number) => {
