@@ -42,6 +42,10 @@ function EditCategory({ id, onSuccess }: Props) {
       warn('分类名称未改变');
       return;
     }
+    if (!newCategoryName) {
+      error('分类名称不能为空');
+      return;
+    }
     setIsPending(true);
     const { id, version } = category;
     updateCategory(id, newCategoryName, version)
