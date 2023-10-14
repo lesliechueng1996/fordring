@@ -34,7 +34,7 @@ function AsideMenu() {
   ];
 
   return (
-    <aside className="w-52 md:w-64">
+    <aside className="w-40 md:w-52 shrink-0">
       <Menu model={items} className="w-full h-full" />
     </aside>
   );
