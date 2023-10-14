@@ -100,6 +100,9 @@ export class AlbumController {
   @ApiOkResponse({
     description: '根据id删除图册成功',
   })
+  @ApiConflictResponse({
+    description: '图册内有图片, 无法删除',
+  })
   async deleteAlbum(@Param('id') id: number) {
     await this.albumService.deleteAlbumById(id);
   }

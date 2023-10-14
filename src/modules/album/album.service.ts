@@ -12,6 +12,7 @@ import { Not, Repository, UpdateResult } from 'typeorm';
 import { CreateAlbumReqDto } from './dto/create-album.dto';
 import { GetAlbumsResDto } from './dto/get-album.dto';
 import { UpdateAlbumDtoReq } from './dto/update-album.dto';
+import { PictureService } from '../picture/picture.service';
 
 @Injectable()
 export class AlbumService {
@@ -20,6 +21,7 @@ export class AlbumService {
   constructor(
     @InjectRepository(Album)
     private albumRepository: Repository<Album>,
+    private pictureService: PictureService,
   ) {}
 
   async countByDisplayName(displayName: string, excludeId?: number) {
@@ -155,7 +157,13 @@ export class AlbumService {
   }
 
   async deleteAlbumById(id: number) {
-    // TODO: check if album has images
+    const pictureCount = await this.pictureService.countByAlbumId(id);
+    if (pictureCount > 0) {
+      this.logger.error(`album id: ${id} has picture`);
+      throw new ConflictException(
+        ApiJsonResult.error(ALBUM_ERROR.ALBUM_HAS_PICTURE, 'Album has picture'),
+      );
+    }
     await this.albumRepository.delete({ id });
   }
 }
