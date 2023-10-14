@@ -27,6 +27,7 @@ function CategoryForm({ title, submitText, initData, isPending, onFormSubmit }: 
       >
         <span className="p-float-label">
           <InputText
+            required
             id="formCategoryName"
             name="categoryName"
             className="w-full"

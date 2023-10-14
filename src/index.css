@@ -18,5 +18,10 @@
     box-sizing: border-box;
   }
 
-  /* @tailwind base; */
+  .p-float-label:has(.p-inputtext[required]) > label::after {
+    content: '*';
+    color: red;
+  }
+
+  @tailwind base;
 }
