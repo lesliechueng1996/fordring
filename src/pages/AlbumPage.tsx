@@ -9,6 +9,7 @@ import { ContextMenu } from 'primereact/contextmenu';
 import EditAlbum from '../components/album/EditAlbum';
 import useSidebarAction from '../hooks/useSidebarAction';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useNavigate } from 'react-router-dom';
 
 function AlbumPage() {
   const { showSidebar, showCreateSidebar, showEditSidebar, hideCreateSidebar, hideEditSidebar } = useSidebarAction();
@@ -16,6 +17,7 @@ function AlbumPage() {
   const contextMenuRef = useRef<ContextMenu>(null);
   const { albums, search, deleteAlbum } = useAlbum();
   const onContextId = useRef<number | null>(null);
+  const navigate = useNavigate();
 
   useMount(() => {
     search();
@@ -62,12 +64,21 @@ function AlbumPage() {
     contextMenuRef.current!.show(e);
   };
 
+  const handleAlbumClick = (id: number) => () => {
+    navigate(`/album/${id}/picture`);
+  };
+
   return (
     <div>
       <div className="flex flex-wrap gap-10">
         <AddAlbumCard onClick={showCreateSidebar} />
         {albums.map((album) => (
-          <ShowAlbumCard key={album.id} {...album} onContextMenuClick={handleContextMenuClick(album.id)} />
+          <ShowAlbumCard
+            key={album.id}
+            {...album}
+            onContextMenuClick={handleContextMenuClick(album.id)}
+            onClick={handleAlbumClick(album.id)}
+          />
         ))}
       </div>
 

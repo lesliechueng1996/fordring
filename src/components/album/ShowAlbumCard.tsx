@@ -8,9 +8,10 @@ type Props = {
   previewUrl: string | null;
   description: string | null;
   onContextMenuClick: MouseEventHandler<HTMLDivElement>;
+  onClick: MouseEventHandler<HTMLDivElement>;
 };
 
-function ShowAlbumCard({ displayName, folderName, previewUrl, description, onContextMenuClick }: Props) {
+function ShowAlbumCard({ displayName, folderName, previewUrl, description, onContextMenuClick, onClick }: Props) {
   const PreviewImg = previewUrl ? (
     <img src={previewUrl} alt={displayName} />
   ) : (
@@ -19,7 +20,7 @@ function ShowAlbumCard({ displayName, folderName, previewUrl, description, onCon
 
   return (
     <div onContextMenu={onContextMenuClick}>
-      <AlbumCard tip={description}>
+      <AlbumCard tip={description} onClick={onClick}>
         <div className="w-full h-full flex flex-col">
           <div className="grow">{PreviewImg}</div>
           <div className="text-center h-12 overflow-hidden shrink-0">
