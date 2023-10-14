@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AlbumService } from './album.service';
 import {
   ApiBadRequestResponse,
@@ -6,6 +15,8 @@ import {
   ApiCreatedResponse,
   ApiExtraModels,
   ApiHeader,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -18,6 +29,8 @@ import {
 import { ALBUM_ERROR } from 'src/constants/error.const';
 import { CreateAlbumReqDto } from './dto/create-album.dto';
 import { AllAlbumsResDto } from './dto/all-albums.dto';
+import { GetAlbumsResDto } from './dto/get-album.dto';
+import { UpdateAlbumDtoReq } from './dto/update-album.dto';
 
 @Controller('album')
 @ApiTags('Album')
@@ -37,12 +50,12 @@ export class AlbumController {
     description: `code - ${ALBUM_ERROR.ALBUM_DISPLAY_NAME_ALREADY_EXIST}: 图册名称已存在, code - ${ALBUM_ERROR.ALBUM_FOLDER_NAME_ALREADY_EXIST}: 图册文件夹名称已存在}`,
   })
   async createAlbum(@Body() body: CreateAlbumReqDto) {
-    this.albumService.createAlbum(body);
+    await this.albumService.createAlbum(body);
   }
 
   @Get('all')
   @ApiOperation({ summary: '获取所有图册' })
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     description: '获取所有图册成功',
   })
   @ApiJsonResultResponse(AllAlbumsResDto)
@@ -51,5 +64,43 @@ export class AlbumController {
     return {
       list: albums,
     };
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: '根据id获取图册' })
+  @ApiOkResponse({
+    description: '根据id获取图册成功',
+  })
+  @ApiNotFoundResponse({
+    description: '该图册不存在',
+  })
+  @ApiJsonResultResponse(GetAlbumsResDto)
+  async getAlbum(@Param('id') id: number) {
+    const album = await this.albumService.getAlbumById(id);
+    return album;
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: '根据id更新图册' })
+  @ApiOkResponse({
+    description: '根据id更新图册成功',
+  })
+  @ApiNotFoundResponse({
+    description: '该图册不存在',
+  })
+  @ApiConflictResponse({
+    description: '图册版本冲突',
+  })
+  async updateAlbum(@Param('id') id: number, @Body() body: UpdateAlbumDtoReq) {
+    await this.albumService.updateAlbumById(id, body);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: '根据id删除图册' })
+  @ApiOkResponse({
+    description: '根据id删除图册成功',
+  })
+  async deleteAlbum(@Param('id') id: number) {
+    await this.albumService.deleteAlbumById(id);
   }
 }
