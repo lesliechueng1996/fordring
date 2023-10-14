@@ -21,6 +21,16 @@ function AsideMenu() {
         },
       ],
     },
+    {
+      label: '图片管理',
+      items: [
+        {
+          label: '图册管理',
+          icon: 'pi pi-images',
+          command: () => navigate('/album'),
+        },
+      ],
+    },
   ];
 
   return (

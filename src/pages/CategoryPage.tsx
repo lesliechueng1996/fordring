@@ -12,14 +12,13 @@ import useMount from '../hooks/useMount';
 import { CategoryPageItem } from '../apis/category-api';
 import toDateString from '../utils/toDateString';
 import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup';
+import useSidebarAction from '../hooks/useSidebarAction';
 
 const createTimeBodyTemplate = (rowData: CategoryPageItem) => {
   return <span>{toDateString(rowData.createTime)}</span>;
 };
 
 function CategoryPage() {
-  console.log('CategoryPage render');
-
   const {
     search,
     isLoading,
@@ -35,27 +34,20 @@ function CategoryPage() {
     deleteCategory,
   } = useCategory();
 
-  const [showSidebar, setShowSidebar] = useState({
-    create: false,
-    edit: false,
-  });
+  const { showSidebar, showCreateSidebar, showEditSidebar, hideCreateSidebar, hideEditSidebar } = useSidebarAction();
 
   const [editId, setEditId] = useState<number | null>(null);
 
   useMount(() => search());
 
-  const showCreateSidebar = () => setShowSidebar({ ...showSidebar, create: true });
-
-  const showEditSidebar = (editId: number) => {
+  const handleEditClick = (editId: number) => () => {
     setEditId(editId);
-    setShowSidebar({ ...showSidebar, edit: true });
+    showEditSidebar();
   };
 
-  const hideCreateSidebar = () => setShowSidebar({ ...showSidebar, create: false });
-
-  const hideEditSidebar = () => {
+  const handleHideEditSidebar = () => {
     setEditId(null);
-    setShowSidebar({ ...showSidebar, edit: false });
+    hideEditSidebar();
   };
 
   const confirmDelete: (rowData: CategoryPageItem) => MouseEventHandler<HTMLButtonElement> =
@@ -76,7 +68,7 @@ function CategoryPage() {
   const actionBodyTemplate = (rowData: CategoryPageItem) => {
     return (
       <div className="space-x-3">
-        <Button label="编辑" severity="help" onClick={() => showEditSidebar(rowData.id)} />
+        <Button label="编辑" severity="help" onClick={handleEditClick(rowData.id)} />
         <Button label="删除" severity="danger" onClick={confirmDelete(rowData)} />
       </div>
     );
@@ -139,11 +131,11 @@ function CategoryPage() {
         />
       </Sidebar>
 
-      <Sidebar visible={showSidebar.edit && editId !== null} onHide={hideEditSidebar}>
+      <Sidebar visible={showSidebar.edit && editId !== null} onHide={handleHideEditSidebar}>
         <EditCategory
           id={editId!}
           onSuccess={() => {
-            hideEditSidebar();
+            handleHideEditSidebar();
             search();
           }}
         />

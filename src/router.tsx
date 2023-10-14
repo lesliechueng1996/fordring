@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
 import CategoryPage from './pages/CategoryPage.tsx';
+import AlbumPage from './pages/AlbumPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -10,6 +11,10 @@ const router = createBrowserRouter([
       {
         path: 'category',
         element: <CategoryPage />,
+      },
+      {
+        path: 'album',
+        element: <AlbumPage />,
       },
     ],
   },
