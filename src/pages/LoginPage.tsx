@@ -47,7 +47,7 @@ function LoginPage() {
     <div className="w-screen h-screen bg-[url('/images/background.jpg')] bg-center bg-no-repeat bg-cover flex justify-end">
       <div className="w-1/2 h-full flex flex-col justify-center items-center">
         <div className="w-1/2 max-w-lg bg-white/70 p-10 rounded-md flex flex-col items-center gap-8">
-          <h1 className="text-white">Fordring Blog</h1>
+          <h1 className="text-white text-4xl font-bold">Fordring Blog</h1>
           <form className="space-y-8 w-full" onSubmit={onSubmit}>
             <div>
               <span className="p-float-label">
@@ -62,14 +62,15 @@ function LoginPage() {
                   name="password"
                   className="w-full"
                   inputClassName="w-full text-lg"
-                  toggleMask
+                  // TODO: fix css issue
+                  // toggleMask
                   feedback={false}
                 />
                 <label htmlFor="password">密码</label>
               </span>
             </div>
             <div>
-              <Button label="登录" className="w-full" type="submit" />
+              <Button label="登录" className="w-full" />
             </div>
           </form>
         </div>
