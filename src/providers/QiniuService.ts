@@ -27,4 +27,24 @@ export class QiniuService {
     const uploadToken = putPolicy.uploadToken(this.mac);
     return uploadToken;
   }
+
+  async deleteFile(key: string) {
+    const config = new qiniu.conf.Config();
+    //config.useHttpsDomain = true;
+    // config.zone = qiniu.zone.Zone_z0;
+    const bucketManager = new qiniu.rs.BucketManager(this.mac, config);
+
+    return new Promise((resolve, reject) => {
+      bucketManager.delete(this.bucket, key, (err, respBody, respInfo) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            respBody,
+            respInfo,
+          });
+        }
+      });
+    });
+  }
 }
