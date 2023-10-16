@@ -1,4 +1,13 @@
-import { Controller, Get, Inject, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { PictureService } from './picture.service';
 import {
   QiniuService,
@@ -7,15 +16,18 @@ import {
 import { AuthGuard } from 'src/guards/AuthGuard';
 import {
   ApiBadRequestResponse,
+  ApiCreatedResponse,
   ApiExtraModels,
   ApiHeader,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { AUTHENTICATION } from 'src/constants/fordring.const';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { CreatePictureReqDto } from './dto/create-picture.dto';
 
 const UPLOAD_TOKEN_CACHE_KEY = 'UPLOAD_TOKEN_CACHE_KEY';
 
@@ -33,9 +45,10 @@ export class PictureController {
   ) {}
 
   @Get('simple-upload-token')
+  @ApiOperation({ summary: '获取简单上传凭证' })
   @ApiOkResponse({ description: '获取成功', type: String })
-  getSimpleUploadToken() {
-    const cachedToken = this.cacheManger.get(UPLOAD_TOKEN_CACHE_KEY);
+  async getSimpleUploadToken() {
+    const cachedToken = await this.cacheManger.get(UPLOAD_TOKEN_CACHE_KEY);
     if (cachedToken) {
       return cachedToken;
     }
@@ -47,5 +60,19 @@ export class PictureController {
       UPLOAD_TOKEN_EXPIRE_SECONDS * 1000,
     );
     return token;
+  }
+
+  @Post()
+  @ApiOperation({ summary: '保存图片' })
+  @ApiCreatedResponse({ description: '保存图片成功' })
+  async createPicture(@Body() body: CreatePictureReqDto) {
+    await this.pictureService.savePicture(body);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: '删除图片' })
+  @ApiOkResponse({ description: '删除图片成功' })
+  async deletePicture(@Param('id') id: number) {
+    await this.pictureService.deletePicture(id);
   }
 }

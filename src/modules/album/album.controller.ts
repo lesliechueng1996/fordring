@@ -31,6 +31,9 @@ import { CreateAlbumReqDto } from './dto/create-album.dto';
 import { AllAlbumsResDto } from './dto/all-albums.dto';
 import { GetAlbumsResDto } from './dto/get-album.dto';
 import { UpdateAlbumDtoReq } from './dto/update-album.dto';
+import { PictureService } from '../picture/picture.service';
+import { ConfigService } from '@nestjs/config';
+import { AllPicturesResDto } from './dto/all-pictures.dto';
 
 @Controller('album')
 @ApiTags('Album')
@@ -39,7 +42,11 @@ import { UpdateAlbumDtoReq } from './dto/update-album.dto';
 @ApiExtraModels(ApiJsonResult)
 @ApiBadRequestResponse({ description: '参数错误' })
 export class AlbumController {
-  constructor(private readonly albumService: AlbumService) {}
+  constructor(
+    private readonly albumService: AlbumService,
+    private readonly pictureService: PictureService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: '创建图册' })
@@ -105,5 +112,24 @@ export class AlbumController {
   })
   async deleteAlbum(@Param('id') id: number) {
     await this.albumService.deleteAlbumById(id);
+  }
+
+  @Get(':id/pictures')
+  @ApiOperation({ summary: '根据id获取图册内所有图片' })
+  @ApiOkResponse({ description: '获取图册内所有图片成功' })
+  @ApiJsonResultResponse(AllPicturesResDto)
+  async allPictures(@Param('id') id: number): Promise<AllPicturesResDto> {
+    const pictures = await this.pictureService.allPicturesByAlbumId(id);
+    const urlPrefix = this.configService.get('QINIU_HOST');
+    return {
+      pictures: pictures.map((picture) => ({
+        id: picture.id,
+        name: picture.name,
+        url: `${urlPrefix}${picture.storageKey}`,
+        description: picture.description,
+        createTime: picture.createTime.getTime(),
+        version: picture.version,
+      })),
+    };
   }
 }
