@@ -1,7 +1,7 @@
 import { ConfigModule } from '@nestjs/config';
 
 const configModule = ConfigModule.forRoot({
-  envFilePath: '.dev.env',
+  envFilePath: '.env.local',
   isGlobal: true,
 });
 
