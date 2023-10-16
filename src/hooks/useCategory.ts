@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { searchCategoryByPage, CategoryPageData, deleteCategoryById } from '../apis/category-api';
+import { searchCategoryByPage, CategoryPageData, deleteCategoryById, getErrorMsg } from '../apis/category-api';
 import usePaginationAndSort, {
   SortOrder,
   fromUrlStringToCurrentPage,
@@ -38,7 +38,7 @@ function useCategory() {
       list: [],
     };
   });
-  const { error } = useToast();
+  const { success, error } = useToast();
 
   const _search = (
     categoryName: string,
@@ -55,7 +55,7 @@ function useCategory() {
           const { data } = res as ApiJsonResult<CategoryPageData>;
           setCategoryPageData(data);
         } else {
-          error(res.message);
+          error(getErrorMsg(res.code));
         }
       })
       .finally(() => {
@@ -86,9 +86,10 @@ function useCategory() {
   const deleteCategory = (id: number) => {
     deleteCategoryById(id).then((res) => {
       if (res.code === API_OK) {
+        success('删除分类成功');
         search();
       } else {
-        error(res.message);
+        error(getErrorMsg(res.code));
       }
     });
   };

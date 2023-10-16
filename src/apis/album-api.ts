@@ -103,3 +103,25 @@ export const deleteAlbumById = async (id: number) => {
     return e as ApiJsonResult<null>;
   }
 };
+
+export type AlbumPictureResItem = {
+  id: number;
+  name: string;
+  url: string;
+  description: string;
+  createTime: number;
+  version: number;
+};
+
+export type AlbumPictureRes = {
+  pictures: AlbumPictureResItem[];
+};
+
+export const getAlbumPictures = async (id: number) => {
+  try {
+    const data = await sendRequest(`/album/${id}/pictures`);
+    return data as ApiJsonResult<AlbumPictureRes>;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+};

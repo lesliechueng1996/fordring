@@ -11,8 +11,9 @@ import { TABLE_PAGE_SIZE_OPTIONS } from '../configs/constant';
 import useMount from '../hooks/useMount';
 import { CategoryPageItem } from '../apis/category-api';
 import toDateString from '../utils/toDateString';
-import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup';
+import { ConfirmPopup } from 'primereact/confirmpopup';
 import useSidebarAction from '../hooks/useSidebarAction';
+import useConfirmPopup from '../hooks/useConfirmPopup';
 
 const createTimeBodyTemplate = (rowData: CategoryPageItem) => {
   return <span>{toDateString(rowData.createTime)}</span>;
@@ -33,6 +34,7 @@ function CategoryPage() {
     clear,
     deleteCategory,
   } = useCategory();
+  const showConfirm = useConfirmPopup();
 
   const { showSidebar, showCreateSidebar, showEditSidebar, hideCreateSidebar, hideEditSidebar } = useSidebarAction();
 
@@ -52,17 +54,7 @@ function CategoryPage() {
 
   const confirmDelete: (rowData: CategoryPageItem) => MouseEventHandler<HTMLButtonElement> =
     (rowData: CategoryPageItem) => (event) => {
-      confirmPopup({
-        target: event.currentTarget,
-        message: '确认删除此分类?',
-        icon: 'pi pi-info-circle',
-        acceptClassName: 'p-button-danger',
-        acceptLabel: '删除',
-        rejectLabel: '取消',
-        accept: () => {
-          deleteCategory(rowData.id);
-        },
-      });
+      showConfirm(event.currentTarget, () => deleteCategory(rowData.id));
     };
 
   const actionBodyTemplate = (rowData: CategoryPageItem) => {
