@@ -67,8 +67,10 @@ export class CategoryService {
       sortOrder,
     );
 
-    const categoryList = await queryBuilder.getMany();
-    const total = await countQueryBuilder.getCount();
+    const [categoryList, total] = await Promise.all([
+      queryBuilder.getMany(),
+      countQueryBuilder.getCount(),
+    ]);
 
     const list = categoryList.map((category) => ({
       id: category.id,

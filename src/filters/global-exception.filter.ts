@@ -33,6 +33,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       return;
     }
 
+    if (exception instanceof ApiJsonResult) {
+      httpAdapter.reply(response, exception, HttpStatus.INTERNAL_SERVER_ERROR);
+      return;
+    }
+
     httpAdapter.reply(
       response,
       ApiJsonResult.error(INTERNAL_SERVER_ERROR, '系统异常'),
