@@ -19,6 +19,11 @@ function AsideMenu() {
           icon: 'pi pi-th-large',
           command: () => navigate('/category'),
         },
+        {
+          label: '标签管理',
+          icon: 'pi pi-tags',
+          command: () => navigate('/tag'),
+        },
       ],
     },
     {

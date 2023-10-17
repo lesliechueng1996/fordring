@@ -3,6 +3,7 @@ import App from './App.tsx';
 import CategoryPage from './pages/CategoryPage.tsx';
 import AlbumPage from './pages/AlbumPage.tsx';
 import AlbumPicturePage from './pages/AlbumPicturePage.tsx';
+import TagPage from './pages/TagPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: 'album/:albumId/picture',
         element: <AlbumPicturePage />,
+      },
+      {
+        path: 'tag',
+        element: <TagPage />,
       },
     ],
   },

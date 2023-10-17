@@ -70,4 +70,13 @@ function usePaginationAndSort(
   };
 }
 
+export const usePaginationAndSortFromUrl = (searchParams: URLSearchParams) => {
+  return usePaginationAndSort(
+    fromUrlStringToCurrentPage(searchParams.get('currentPage')),
+    fromUrlStringToPageSize(searchParams.get('pageSize')),
+    searchParams.get('sortField') || '',
+    fromUrlStringToSortOrder(searchParams.get('sortOrder'))
+  );
+};
+
 export default usePaginationAndSort;

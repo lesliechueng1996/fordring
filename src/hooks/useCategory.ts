@@ -1,12 +1,6 @@
 import { useState } from 'react';
 import { searchCategoryByPage, CategoryPageData, deleteCategoryById, getErrorMsg } from '../apis/category-api';
-import usePaginationAndSort, {
-  SortOrder,
-  fromUrlStringToCurrentPage,
-  fromUrlStringToPageSize,
-  fromUrlStringToSortOrder,
-  sortOrderToStr,
-} from './usePaginationAndSort';
+import { SortOrder, sortOrderToStr, usePaginationAndSortFromUrl } from './usePaginationAndSort';
 import type { DataTableStateEvent } from 'primereact/datatable';
 import { API_OK } from '../apis/http-request';
 import useToast from './useToast';
@@ -24,12 +18,8 @@ function useCategory() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Pagination and Sort
-  const { currentPage, pageSize, sortField, sortOrder, setPaginationAndSort, first } = usePaginationAndSort(
-    fromUrlStringToCurrentPage(searchParams.get('currentPage')),
-    fromUrlStringToPageSize(searchParams.get('pageSize')),
-    searchParams.get('sortField') || '',
-    fromUrlStringToSortOrder(searchParams.get('sortOrder'))
-  );
+  const { currentPage, pageSize, sortField, sortOrder, setPaginationAndSort, first } =
+    usePaginationAndSortFromUrl(searchParams);
 
   // Table Data
   const [categoryPageData, setCategoryPageData] = useState<CategoryPageData>(() => {
