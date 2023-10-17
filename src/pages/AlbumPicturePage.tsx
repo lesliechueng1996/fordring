@@ -65,6 +65,10 @@ function AlbumPicturePage() {
                 <p className="text-neutral-400">图册文件夹路径:</p>
                 <p className="font-bold">{album.folderName}/</p>
               </div>
+              <div className="flex gap-3">
+                <p className="text-neutral-400">图片数量:</p>
+                <p className="font-bold">{album.pictureCount}</p>
+              </div>
               <div className="flex gap-3 items-start">
                 <p className="shrink-0 text-neutral-400">图册描述:</p>
                 <p className="font-bold">{album.description}</p>

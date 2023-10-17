@@ -33,6 +33,8 @@ export type Album = {
   version: number;
 };
 
+export type AlbumWithPictureCount = Album & { pictureCount: number };
+
 export const createAlbum = async (displayName: string, folderName: string, previewUrl: string, description: string) => {
   try {
     const data = await sendRequest('/album', {

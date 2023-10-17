@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import {
-  Album,
   getAlbumById,
   getErrorMessage as getAlbumApiErrMsg,
   getAlbumPictures,
   AlbumPictureRes,
+  AlbumWithPictureCount,
 } from '../apis/album-api';
 import { API_OK } from '../apis/http-request';
 import useToast from './useToast';
@@ -21,14 +21,14 @@ export type AlbumPicture = {
 };
 
 function useAlbumPicture(id: number) {
-  const [album, setAlbum] = useState<Album>();
+  const [album, setAlbum] = useState<AlbumWithPictureCount>();
   const [pictures, setPictures] = useState<AlbumPicture[]>([]);
   const { error, success } = useToast();
 
   const loadAlbum = () => {
     getAlbumById(id).then((res) => {
       if (res.code === API_OK) {
-        setAlbum(res.data as Album);
+        setAlbum(res.data as AlbumWithPictureCount);
       } else {
         error(getAlbumApiErrMsg(res.code));
       }

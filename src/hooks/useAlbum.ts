@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Album, deleteAlbumById, getAllAlbums } from '../apis/album-api';
+import { Album, AlbumWithPictureCount, deleteAlbumById, getAllAlbums } from '../apis/album-api';
 import { API_OK } from '../apis/http-request';
 import useToast from './useToast';
 
@@ -11,7 +11,7 @@ function useAlbum() {
     getAllAlbums().then((res) => {
       if (res.code === API_OK) {
         const { list } = res.data as {
-          list: Array<Album>;
+          list: Array<AlbumWithPictureCount>;
         };
         setAlbums(list);
       } else {
