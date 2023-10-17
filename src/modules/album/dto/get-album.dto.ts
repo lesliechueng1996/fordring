@@ -20,12 +20,16 @@ export class GetAlbumsResDto {
   @ApiProperty({ description: '图册版本' })
   version: number;
 
-  constructor(album: Album) {
+  @ApiProperty({ description: '图册图片数量' })
+  pictureCount: number;
+
+  constructor(album: Album, pictureCount: number) {
     this.id = album.id;
     this.displayName = album.displayName;
     this.folderName = album.folderName;
     this.description = album.description;
     this.previewUrl = album.previewUrl;
     this.version = album.version;
+    this.pictureCount = pictureCount;
   }
 }

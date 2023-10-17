@@ -14,6 +14,8 @@ import { GetAlbumsResDto } from './dto/get-album.dto';
 import { UpdateAlbumDtoReq } from './dto/update-album.dto';
 import { PictureService } from '../picture/picture.service';
 
+type AlbumWithPictureCount = Album & { pictureCount: number };
+
 @Injectable()
 export class AlbumService {
   private readonly logger: Logger = new Logger(AlbumService.name);
@@ -102,19 +104,38 @@ export class AlbumService {
   }
 
   async allAlbums() {
-    const albums = await this.albumRepository.find();
-    return albums.map((album) => new GetAlbumsResDto(album));
+    const result: AlbumWithPictureCount[] = await this.albumRepository.query(`
+      select 
+        album.id as "id",
+        album.display_name as "displayName",
+        album.folder_name as "folderName",
+        album.description as "description",
+        album.preview_url as "previewUrl",
+        album.version as "version",
+        album.create_time as "createTime",
+        album.update_time as "updateTime",
+        t1.picture_count as "pictureCount"
+      from t_album as album 
+      left join (
+        select album_id, count(*) as picture_count from t_picture group by album_id
+      ) t1 on album.id = t1.album_id
+    `);
+
+    return result.map(
+      (album) => new GetAlbumsResDto(album, album.pictureCount),
+    );
   }
 
   async getAlbumById(id: number) {
     const album = await this.albumRepository.findOneBy({ id });
+    const pictureCount = await this.pictureService.countByAlbumId(id);
     if (!album) {
       this.logger.error(`album id: ${id} not found`);
       throw new NotFoundException(
         ApiJsonResult.error(ALBUM_ERROR.ALBUM_NOT_FOUND, 'Album not found'),
       );
     }
-    return new GetAlbumsResDto(album);
+    return new GetAlbumsResDto(album, pictureCount);
   }
 
   async updateAlbumById(id: number, dto: UpdateAlbumDtoReq) {
