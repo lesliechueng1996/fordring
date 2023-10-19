@@ -38,3 +38,11 @@ export class CreateAlbumReqDto {
   @ValidateIf((o) => !o)
   previewUrl: string;
 }
+
+export class CreateALbumResDto {
+  @ApiProperty({
+    description: '图册id',
+    example: 1,
+  })
+  id: number;
+}

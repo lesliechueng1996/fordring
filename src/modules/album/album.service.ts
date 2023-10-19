@@ -88,12 +88,13 @@ export class AlbumService {
     await this.isDisplayNameOrFolderNameExist(displayName, folderName);
 
     try {
-      await this.albumRepository.insert({
+      const album = await this.albumRepository.save({
         displayName,
         folderName,
         description,
         previewUrl,
       });
+      return album;
     } catch (e) {
       this.logger.error(e);
       throw ApiJsonResult.error(
@@ -186,5 +187,17 @@ export class AlbumService {
       );
     }
     await this.albumRepository.delete({ id });
+  }
+
+  async albumToOptions() {
+    const albums = await this.albumRepository.find({
+      order: {
+        createTime: 'DESC',
+      },
+    });
+    return albums.map((album) => ({
+      label: album.displayName,
+      value: String(album.id),
+    }));
   }
 }
