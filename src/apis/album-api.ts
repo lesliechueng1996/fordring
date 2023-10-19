@@ -127,3 +127,12 @@ export const getAlbumPictures = async (id: number) => {
     return e as ApiJsonResult<null>;
   }
 };
+
+export const getAlbumOptions = async () => {
+  try {
+    const data = await sendRequest('/album/options');
+    return data as ApiJsonResult<DropdownOption[]>;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+};

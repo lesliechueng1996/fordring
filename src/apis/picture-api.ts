@@ -9,6 +9,11 @@ export const getSimpleUploadToken = async () => {
   }
 };
 
+export type SavePictureRes = {
+  id: number;
+  url: string;
+};
+
 export const savePicture = async (albumId: number, name: string, storageKey: string, description: string) => {
   try {
     const data = await sendRequest('/picture', {
@@ -20,7 +25,7 @@ export const savePicture = async (albumId: number, name: string, storageKey: str
         description,
       }),
     });
-    return data;
+    return data as ApiJsonResult<SavePictureRes>;
   } catch (e) {
     return e as ApiJsonResult<unknown>;
   }

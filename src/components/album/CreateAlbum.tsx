@@ -5,7 +5,7 @@ import { createAlbum, getErrorMessage } from '../../apis/album-api';
 import { API_OK } from '../../apis/http-request';
 
 type Props = {
-  onSuccess: () => void;
+  onSuccess: (albumId: number) => void;
 };
 
 function CreateAlbum({ onSuccess }: Props) {
@@ -20,7 +20,8 @@ function CreateAlbum({ onSuccess }: Props) {
       .then((res) => {
         if (res.code === API_OK) {
           success('创建图册成功');
-          onSuccess();
+          const { id } = res.data as { id: number };
+          onSuccess(id);
         } else {
           error(getErrorMessage(res.code));
         }

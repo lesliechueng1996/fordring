@@ -4,3 +4,8 @@ type ApiJsonResult<T> = {
   message: string;
   data: T;
 };
+
+type DropdownOption = {
+  label: string;
+  value: string;
+};

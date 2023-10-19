@@ -24,6 +24,11 @@ function AsideMenu() {
           icon: 'pi pi-tags',
           command: () => navigate('/tag'),
         },
+        {
+          label: '文章管理',
+          icon: 'pi pi-file-edit',
+          command: () => navigate('/article'),
+        },
       ],
     },
     {

@@ -4,6 +4,7 @@ import CategoryPage from './pages/CategoryPage.tsx';
 import AlbumPage from './pages/AlbumPage.tsx';
 import AlbumPicturePage from './pages/AlbumPicturePage.tsx';
 import TagPage from './pages/TagPage.tsx';
+import ArticlePage from './pages/ArticlePage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: 'tag',
         element: <TagPage />,
+      },
+      {
+        path: 'article',
+        element: <ArticlePage />,
       },
     ],
   },

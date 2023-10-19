@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import PictureForm, { FormData } from './PictureForm';
-import { savePicture } from '../../apis/picture-api';
+import { SavePictureRes, savePicture } from '../../apis/picture-api';
 import { API_OK } from '../../apis/http-request';
 import useToast from '../../hooks/useToast';
 
 type Props = {
   albumId: number;
-  onSuccess: () => void;
+  onSuccess: (id: number, url: string) => void;
+  title?: string;
 };
 
-function AddNewPicture({ albumId, onSuccess }: Props) {
+function AddNewPicture({ albumId, onSuccess, title }: Props) {
   const [isPending, setIsPending] = useState(false);
   const { error } = useToast();
 
@@ -19,7 +20,8 @@ function AddNewPicture({ albumId, onSuccess }: Props) {
     savePicture(albumId, name, storageKey, description)
       .then((res) => {
         if (res.code === API_OK) {
-          onSuccess();
+          const { id, url } = res.data as SavePictureRes;
+          onSuccess(id, url);
         } else {
           error('添加图片失败');
         }
@@ -27,7 +29,7 @@ function AddNewPicture({ albumId, onSuccess }: Props) {
       .finally(() => setIsPending(false));
   };
 
-  return <PictureForm title="添加图片" isPending={isPending} onFormSubmit={handleFormSubmit} />;
+  return <PictureForm title={title || '添加图片'} isPending={isPending} onFormSubmit={handleFormSubmit} />;
 }
 
 export default AddNewPicture;
