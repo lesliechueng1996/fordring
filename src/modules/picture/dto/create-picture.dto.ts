@@ -30,3 +30,15 @@ export class CreatePictureReqDto {
   @IsNotEmpty()
   storageKey: string;
 }
+
+export class CreatePictureResDto {
+  @ApiProperty({
+    description: '图片ID',
+  })
+  id: number;
+
+  @ApiProperty({
+    description: '图片URL',
+  })
+  url: string;
+}

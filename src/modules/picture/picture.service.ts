@@ -27,7 +27,7 @@ export class PictureService {
     // FIXME in the future, we should add folder support
     picture.url = storageKey;
 
-    return this.pictureRepository.insert(picture);
+    return this.pictureRepository.save(picture);
   }
 
   async allPicturesByAlbumId(albumId: number) {

@@ -24,10 +24,16 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AUTHENTICATION } from 'src/constants/fordring.const';
-import { ApiJsonResult } from 'src/dto/api-json-result.dto';
+import {
+  ApiJsonResult,
+  ApiJsonResultResponse,
+} from 'src/dto/api-json-result.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { CreatePictureReqDto } from './dto/create-picture.dto';
+import {
+  CreatePictureReqDto,
+  CreatePictureResDto,
+} from './dto/create-picture.dto';
 
 const UPLOAD_TOKEN_CACHE_KEY = 'UPLOAD_TOKEN_CACHE_KEY';
 
@@ -65,8 +71,13 @@ export class PictureController {
   @Post()
   @ApiOperation({ summary: '保存图片' })
   @ApiCreatedResponse({ description: '保存图片成功' })
+  @ApiJsonResultResponse(CreatePictureResDto)
   async createPicture(@Body() body: CreatePictureReqDto) {
-    await this.pictureService.savePicture(body);
+    const picture = await this.pictureService.savePicture(body);
+    return {
+      id: picture.id,
+      url: picture.url,
+    };
   }
 
   @Delete(':id')
