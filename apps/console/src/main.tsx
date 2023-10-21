@@ -1,13 +1,12 @@
-import { StrictMode } from 'react';
-import * as ReactDOM from 'react-dom/client';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primeicons/primeicons.css';
+import './index.css';
+import CustomerProvider from './providers/CustomerProvider';
 
-import App from './app/App';
-
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <StrictMode>
-    <App />
-  </StrictMode>
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <CustomerProvider />
+  </React.StrictMode>
 );

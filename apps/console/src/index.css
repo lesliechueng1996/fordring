@@ -1,0 +1,27 @@
+/* TODO: waiting https://github.com/primefaces/primereact/issues/4987 fix */
+
+@layer tailwind-base, primereact, tailwind-utilities;
+
+@layer tailwind-base {
+  /* @tailwind base; */
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
+
+@layer primereact {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .p-float-label:has(.p-inputtext[required]) > label::after {
+    content: '*';
+    color: red;
+  }
+
+  @tailwind base;
+}
