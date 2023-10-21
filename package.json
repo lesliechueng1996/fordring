@@ -7,6 +7,8 @@
   "dependencies": {},
   "devDependencies": {
     "@nx/js": "17.0.1",
+    "@nx/nest": "^17.0.1",
+    "@nx/react": "^17.0.1",
     "@nx/workspace": "17.0.1",
     "nx": "17.0.1"
   }
