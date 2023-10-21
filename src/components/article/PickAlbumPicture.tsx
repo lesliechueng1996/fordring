@@ -25,8 +25,8 @@ function PickAlbumPicture({ albumId, onPicChoose }: Props) {
   return (
     <div className="flex flex-wrap gap-3">
       {pictures.map((pic) => (
-        <div className="w-28 h-20 py-2" onClick={() => onPicChoose(pic.id, pic.url)}>
-          <img key={pic.id} src={pic.url} alt={pic.name} />
+        <div key={pic.id} className="w-28 h-20 py-2" onClick={() => onPicChoose(pic.id, pic.url)}>
+          <img src={pic.url} alt={pic.name} />
         </div>
       ))}
     </div>
