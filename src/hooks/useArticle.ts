@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import useToast from './useToast';
+import { saveDraftArticle } from '../apis/article-api';
+import { API_OK } from '../apis/http-request';
 
 type Article = {
   title: string;
@@ -11,7 +13,7 @@ function useArticle() {
     title: '',
     content: '',
   });
-  const { error } = useToast();
+  const { error, success } = useToast();
 
   const setTitle = (title: string) => {
     setArticle({
@@ -28,13 +30,19 @@ function useArticle() {
   };
 
   const saveDraft = () => {
-    const { title } = article;
+    const { title, content } = article;
     if (!title) {
       error('请输入标题');
       return;
     }
 
-    // TODO invoke api
+    saveDraftArticle(title, content).then((res) => {
+      if (res.code === API_OK) {
+        success('保存成功');
+      } else {
+        error('保存失败');
+      }
+    });
   };
 
   return {

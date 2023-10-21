@@ -7,6 +7,7 @@ import useSidebarAction from '../hooks/useSidebarAction';
 import { Sidebar } from 'primereact/sidebar';
 import PickPicture from '../components/article/PickPicture';
 import useArticle from '../hooks/useArticle';
+import { ARTICLE_IMAGE_PREFIX } from '../configs/constant';
 
 function ArticlePage() {
   const { title, content, setTitle, setContent, saveDraft } = useArticle();
@@ -34,7 +35,13 @@ function ArticlePage() {
   return (
     <div className="flex gap-10 flex-col h-full">
       <div className="flex gap-5 shrink-0">
-        <InputText placeholder="标题" className="grow" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <InputText
+          placeholder="标题"
+          className="grow"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          maxLength={128}
+        />
         <Button label="保存草稿" className="shrink-0" onClick={saveDraft} />
         <Button label="保存" icon="pi pi-save" severity="success" className="shrink-0" />
       </div>
@@ -54,7 +61,8 @@ function ArticlePage() {
       <Sidebar visible={showSidebar.create} onHide={hideCreateSidebar} className="w-1/4">
         <PickPicture
           onPicChoose={({ picId, url }) => {
-            editorApiRef.current?.replaceSelection(`![IMAGE-${picId}](${url})`);
+            editorApiRef.current?.replaceSelection(`![${ARTICLE_IMAGE_PREFIX}${picId}](${url})`);
+            hideCreateSidebar();
           }}
         />
       </Sidebar>
