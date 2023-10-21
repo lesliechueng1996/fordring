@@ -39,3 +39,10 @@ testem.log
 Thumbs.db
 
 .nx/cache
+
+# Log
+logs
+*.log
+
+# ENV
+.env.local
