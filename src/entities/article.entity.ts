@@ -1,4 +1,4 @@
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 
 export enum ArticleStatus {
@@ -6,6 +6,7 @@ export enum ArticleStatus {
   SHOW = 1,
 }
 
+@Entity()
 export class Article extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
