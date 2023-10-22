@@ -31,7 +31,7 @@ async function bootstrap() {
   // swagger
   if (process.env.NODE_ENV === 'development') {
     const document = SwaggerModule.createDocument(app, SwaggerConfig);
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('swagger', app, document);
   }
 
   // interceptors

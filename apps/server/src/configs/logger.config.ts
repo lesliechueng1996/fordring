@@ -1,4 +1,4 @@
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { WinstonModule } from 'nest-winston';
 import { format, transports } from 'winston';
 import 'winston-daily-rotate-file';
@@ -14,11 +14,11 @@ const timezoned = () => {
 const transportArray: TransportType[] = [
   // error log
   new transports.DailyRotateFile({
-    filename: 'logs/error/%DATE%-error.log',
+    filename: 'logs/server/error/%DATE%-error.log',
     level: 'error',
     format: format.combine(
       format.timestamp({ format: timezoned }),
-      format.prettyPrint(),
+      format.prettyPrint()
     ),
     datePattern: 'YYYY-MM-DD',
     zippedArchive: false,
@@ -26,10 +26,10 @@ const transportArray: TransportType[] = [
   }),
   // all level log
   new transports.DailyRotateFile({
-    filename: 'logs/all/%DATE%-all.log',
+    filename: 'logs/server/all/%DATE%-all.log',
     format: format.combine(
       format.timestamp({ format: timezoned }),
-      format.prettyPrint(),
+      format.prettyPrint()
     ),
     datePattern: 'YYYY-MM-DD',
     zippedArchive: false,
@@ -50,9 +50,9 @@ if (process.env.NODE_ENV !== 'production') {
           return `${info.timestamp} [${info.level}] ${info.message} ${
             info.stack || ''
           }`;
-        }),
+        })
       ),
-    }),
+    })
   );
 }
 

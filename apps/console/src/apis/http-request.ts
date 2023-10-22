@@ -1,7 +1,10 @@
 import { isTokenWillExpired } from '../utils/jwt';
-import { GenerateTokenRes, refreshToken as invokeRefreshToken } from './auth-api';
+import {
+  GenerateTokenRes,
+  refreshToken as invokeRefreshToken,
+} from './auth-api';
 
-export const BASE_URL = 'http://localhost:3000';
+export const BASE_URL = 'http://localhost:3000/api';
 
 export const API_OK = 0;
 
@@ -32,7 +35,10 @@ type RejectReasonType = {
   data?: unknown;
 };
 
-export function sendOneRequest(url: string, options: RequestInit): Promise<ApiJsonResult<unknown>> {
+export function sendOneRequest(
+  url: string,
+  options: RequestInit
+): Promise<ApiJsonResult<unknown>> {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     try {
@@ -101,7 +107,12 @@ function retryRequest(
     }
 
     const optionsClone = fillOption(newTokenStore.accessToken, options);
-    console.log('Refresh token success, retry request', path, optionsClone, newTokenStore);
+    console.log(
+      'Refresh token success, retry request',
+      path,
+      optionsClone,
+      newTokenStore
+    );
     sendOneRequest(`${BASE_URL}${path}`, optionsClone).then(resolve, reject);
     setTokenStore && setTokenStore(newTokenStore);
   });
@@ -112,10 +123,20 @@ function retryRequest(
   });
 }
 
-export function sendRequest(path: string, options?: RequestInit): Promise<ApiJsonResult<unknown>> {
-  const { accessToken, refreshToken, setTokenStore, clearTokenStore } = tokenStore;
+export function sendRequest(
+  path: string,
+  options?: RequestInit
+): Promise<ApiJsonResult<unknown>> {
+  const { accessToken, refreshToken, setTokenStore, clearTokenStore } =
+    tokenStore;
 
-  console.log('Start to send request', path, options, accessToken, refreshToken);
+  console.log(
+    'Start to send request',
+    path,
+    options,
+    accessToken,
+    refreshToken
+  );
 
   return new Promise((resolve, reject) => {
     if (!accessToken || !refreshToken) {
@@ -128,20 +149,39 @@ export function sendRequest(path: string, options?: RequestInit): Promise<ApiJso
 
     if (isTokenWillExpired(accessToken)) {
       console.log('Token will expired');
-      retryRequest(refreshToken, resolve, reject, path, options, setTokenStore, clearTokenStore);
+      retryRequest(
+        refreshToken,
+        resolve,
+        reject,
+        path,
+        options,
+        setTokenStore,
+        clearTokenStore
+      );
       return;
     }
 
     const optionsClone = fillOption(accessToken, options);
     console.log('Send request', path, optionsClone);
-    sendOneRequest(`${BASE_URL}${path}`, optionsClone).then(resolve, (reason) => {
-      console.log('Request failed', reason);
-      if (reason.status === 401) {
-        console.log('Token expired');
-        retryRequest(refreshToken, resolve, reject, path, options, setTokenStore, clearTokenStore);
-      } else {
-        reject(reason);
+    sendOneRequest(`${BASE_URL}${path}`, optionsClone).then(
+      resolve,
+      (reason) => {
+        console.log('Request failed', reason);
+        if (reason.status === 401) {
+          console.log('Token expired');
+          retryRequest(
+            refreshToken,
+            resolve,
+            reject,
+            path,
+            options,
+            setTokenStore,
+            clearTokenStore
+          );
+        } else {
+          reject(reason);
+        }
       }
-    });
+    );
   });
 }

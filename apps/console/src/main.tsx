@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primeicons/primeicons.css';
+import 'primeicons/fonts/primeicons.woff2';
 import './index.css';
 import CustomerProvider from './providers/CustomerProvider';
 
