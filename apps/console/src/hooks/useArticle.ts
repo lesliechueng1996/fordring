@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import useToast from './useToast';
-import { saveDraftArticle } from '../apis/article-api';
+import { saveDraftArticle, updateDraftArticle } from '../apis/article-api';
 import { API_OK } from '../apis/http-request';
+import { useSearchParams } from 'react-router-dom';
+
+const ARTICLE_ID = 'articleId';
 
 type Article = {
   title: string;
@@ -9,6 +12,9 @@ type Article = {
 };
 
 function useArticle() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const articleId = searchParams.get(ARTICLE_ID);
+
   const [article, setArticle] = useState<Article>({
     title: '',
     content: '',
@@ -29,20 +35,47 @@ function useArticle() {
     });
   };
 
-  const saveDraft = () => {
-    const { title, content } = article;
+  const validateInput = () => {
+    const { title } = article;
     if (!title) {
       error('请输入标题');
+      return false;
+    }
+    return true;
+  };
+
+  const saveDraft = () => {
+    if (!validateInput()) {
       return;
     }
 
-    saveDraftArticle(title, content).then((res) => {
-      if (res.code === API_OK) {
-        success('保存成功');
-      } else {
-        error('保存失败');
-      }
-    });
+    const { title, content } = article;
+
+    if (articleId) {
+      updateDraftArticle(articleId, title, content).then((res) => {
+        if (res.code === API_OK) {
+          success('保存成功');
+        } else {
+          error('保存失败');
+        }
+      });
+    } else {
+      saveDraftArticle(title, content).then((res) => {
+        if (res.code === API_OK) {
+          success('保存成功');
+          const { id } = res.data as { id: string };
+          setSearchParams({ [ARTICLE_ID]: id });
+        } else {
+          error('保存失败');
+        }
+      });
+    }
+  };
+
+  const save = () => {
+    if (!validateInput()) {
+      return;
+    }
   };
 
   return {
@@ -50,6 +83,7 @@ function useArticle() {
     setTitle,
     setContent,
     saveDraft,
+    save,
   };
 }
 
