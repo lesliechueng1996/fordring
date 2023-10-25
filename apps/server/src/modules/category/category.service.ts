@@ -6,12 +6,13 @@ import { Category } from 'src/entities/category.entity';
 import { Repository } from 'typeorm';
 import { PageCategoryReqDto } from './dto/page-category.dto';
 import { withPageAndOrderQuery } from 'src/utils/query-builder.util';
+import { CategoryOptionsResDto } from './dto/category-options.dto';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
-    private categoryRepository: Repository<Category>,
+    private categoryRepository: Repository<Category>
   ) {}
 
   private readonly logger: Logger = new Logger(CategoryService.name);
@@ -22,8 +23,8 @@ export class CategoryService {
       throw new ConflictException(
         ApiJsonResult.error(
           CATEGORY_ERROR.CATEGORY_ALREADY_EXIST,
-          'Category already exist',
-        ),
+          'Category already exist'
+        )
       );
     }
   }
@@ -42,7 +43,7 @@ export class CategoryService {
     } catch (error) {
       throw ApiJsonResult.error(
         CATEGORY_ERROR.CREATE_CATEGORY_FAILED,
-        'Create category failed',
+        'Create category failed'
       );
     }
   }
@@ -64,7 +65,7 @@ export class CategoryService {
       currentPage,
       pageSize,
       sortField,
-      sortOrder,
+      sortOrder
     );
 
     const [categoryList, total] = await Promise.all([
@@ -107,14 +108,14 @@ export class CategoryService {
         },
         {
           categoryName,
-        },
+        }
       );
     } catch (e) {
       this.logger.error(`Update category failed, id: ${id}`);
 
       throw ApiJsonResult.error(
         CATEGORY_ERROR.UPDATE_CATEGORY_FAILED,
-        'Update category failed',
+        'Update category failed'
       );
     }
 
@@ -124,9 +125,18 @@ export class CategoryService {
       throw new ConflictException(
         ApiJsonResult.error(
           CATEGORY_ERROR.CATEGORY_VERSION_CONFLICT,
-          'Category version conflict',
-        ),
+          'Category version conflict'
+        )
       );
     }
+  }
+
+  async categoryToOptions(): Promise<CategoryOptionsResDto[]> {
+    const categoryList = await this.categoryRepository.find();
+
+    return categoryList.map((category) => ({
+      label: category.categoryName,
+      value: category.id.toString(),
+    }));
   }
 }

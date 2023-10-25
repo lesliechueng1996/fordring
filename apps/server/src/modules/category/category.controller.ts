@@ -35,6 +35,7 @@ import { AUTHENTICATION } from 'src/constants/fordring.const';
 import { GetCategoryResDto } from './dto/get-category.dto';
 import { UpdateCategoryReqDto } from './dto/update-category.dto';
 import { CATEGORY_ERROR } from 'src/constants/error.const';
+import { CategoryOptionsResDto } from './dto/category-options.dto';
 
 @Controller('category')
 @UseGuards(AuthGuard)
@@ -64,9 +65,17 @@ export class CategoryController {
   })
   @ApiJsonResultResponse(PageCategoryResDto)
   async pageCategory(
-    @Query() query: PageCategoryReqDto,
+    @Query() query: PageCategoryReqDto
   ): Promise<PageCategoryResDto> {
     return await this.categoryService.searchCategoriesByPage(query);
+  }
+
+  @Get('options')
+  @ApiOperation({ summary: '获取分类选项' })
+  @ApiOkResponse({ description: '获取分类选项成功' })
+  @ApiJsonResultResponse(CategoryOptionsResDto)
+  async categoryOptions() {
+    return await this.categoryService.categoryToOptions();
   }
 
   @Delete(':id')
@@ -90,8 +99,8 @@ export class CategoryController {
       throw new NotFoundException(
         ApiJsonResult.error(
           CATEGORY_ERROR.CATEGORY_NOT_FOUND,
-          'Category not found',
-        ),
+          'Category not found'
+        )
       );
     }
     return new GetCategoryResDto(category);
@@ -107,7 +116,7 @@ export class CategoryController {
   })
   async updateCategory(
     @Param('id') id: number,
-    @Body() body: UpdateCategoryReqDto,
+    @Body() body: UpdateCategoryReqDto
   ) {
     const { categoryName, version } = body;
     await this.categoryService.updateCategory(id, categoryName, version);
