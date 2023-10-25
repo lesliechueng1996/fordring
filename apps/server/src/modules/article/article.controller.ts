@@ -83,7 +83,7 @@ export class ArticleController {
     await this.articleService.updateDraftArticle(id, title, content);
   }
 
-  @Post('/save')
+  @Post('/')
   @ApiOperation({ summary: '保存文章' })
   @ApiCreatedResponse({ description: '保存成功' })
   @ApiJsonResultResponse(SaveArticleDtoRes)
