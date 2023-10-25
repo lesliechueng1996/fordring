@@ -30,6 +30,7 @@ import { CreateTagDtoReq } from './dto/create-tag.dto';
 import { PageTagReqDto, PageTagResDto } from './dto/page-tag.dto';
 import { GetTagResDto } from './dto/get-tag.dto';
 import { UpdateTagReqDto } from './dto/update-tag.dto';
+import { TagOptionsDtoRes } from './dto/tag-options.dto';
 
 @Controller('tag')
 @UseGuards(AuthGuard)
@@ -57,6 +58,14 @@ export class TagController {
     return await this.tagService.searchTagByPage(query);
   }
 
+  @Get('options')
+  @ApiOperation({ summary: '获取标签选项' })
+  @ApiOkResponse({ description: '获取标签选项成功' })
+  @ApiJsonResultResponse(TagOptionsDtoRes)
+  async categoryOptions() {
+    return await this.tagService.tagToOptions();
+  }
+
   @Delete(':id')
   @ApiOperation({ summary: '删除标签' })
   @ApiOkResponse({ description: '删除成功' })
@@ -79,6 +88,6 @@ export class TagController {
   @ApiConflictResponse({ description: '标签已存在' })
   async updateTag(@Param('id') id: number, @Body() body: UpdateTagReqDto) {
     const { tagName, color, version } = body;
-    await this.tagService.updateTag(id, tagName, color, version);
+    return await this.tagService.updateTag(id, tagName, color, version);
   }
 }

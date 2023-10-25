@@ -6,6 +6,7 @@ import { Tag } from 'src/entities/tag.entity';
 import { Not, Repository, UpdateResult } from 'typeorm';
 import { PageTagReqDto, PageTagResItem } from './dto/page-tag.dto';
 import { withPageAndOrderQuery } from 'src/utils/query-builder.util';
+import { TagOptionsDtoRes } from './dto/tag-options.dto';
 
 @Injectable()
 export class TagService {
@@ -22,7 +23,7 @@ export class TagService {
     const isExist = await this.tagRepository.exist(options);
     if (isExist) {
       throw new ConflictException(
-        ApiJsonResult.error(TAG_ERROR.TAG_ALREADY_EXIST, 'tag already exist'),
+        ApiJsonResult.error(TAG_ERROR.TAG_ALREADY_EXIST, 'tag already exist')
       );
     }
   }
@@ -35,7 +36,7 @@ export class TagService {
       this.logger.error(e);
       throw ApiJsonResult.error(
         TAG_ERROR.CREATE_TAG_FAILED,
-        'create tag failed',
+        'create tag failed'
       );
     }
   }
@@ -57,7 +58,7 @@ export class TagService {
       currentPage,
       pageSize,
       sortField,
-      sortOrder,
+      sortOrder
     );
 
     const [tagList, total] = await Promise.all([
@@ -66,7 +67,7 @@ export class TagService {
     ]);
 
     const list: PageTagResItem[] = tagList.map(
-      (tag) => new PageTagResItem(tag),
+      (tag) => new PageTagResItem(tag)
     );
 
     return { list, total };
@@ -95,13 +96,13 @@ export class TagService {
         {
           tagName,
           color: color.toUpperCase(),
-        },
+        }
       );
     } catch (e) {
       this.logger.error(e);
       throw ApiJsonResult.error(
         TAG_ERROR.UPDATE_TAG_FAILED,
-        'Update tag failed',
+        'Update tag failed'
       );
     }
 
@@ -110,9 +111,17 @@ export class TagService {
       throw new ConflictException(
         ApiJsonResult.error(
           TAG_ERROR.TAG_VERSION_CONFLICT,
-          'Tag not found or version not match',
-        ),
+          'Tag not found or version not match'
+        )
       );
     }
+  }
+
+  async tagToOptions(): Promise<TagOptionsDtoRes[]> {
+    const tagList = await this.tagRepository.find();
+    return tagList.map((tag) => ({
+      label: tag.tagName,
+      value: tag.id.toString(),
+    }));
   }
 }
