@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ALbumOptionsResDto {
+export class AlbumOptionsResDto {
   @ApiProperty({
     description: '图册名称',
   })

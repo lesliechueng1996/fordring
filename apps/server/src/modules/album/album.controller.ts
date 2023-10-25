@@ -34,7 +34,7 @@ import { UpdateAlbumDtoReq } from './dto/update-album.dto';
 import { PictureService } from '../picture/picture.service';
 import { ConfigService } from '@nestjs/config';
 import { AllPicturesResDto } from './dto/all-pictures.dto';
-import { ALbumOptionsResDto } from './dto/album-options.dto';
+import { AlbumOptionsResDto } from './dto/album-options.dto';
 
 @Controller('album')
 @ApiTags('Album')
@@ -46,7 +46,7 @@ export class AlbumController {
   constructor(
     private readonly albumService: AlbumService,
     private readonly pictureService: PictureService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   @Post()
@@ -81,7 +81,7 @@ export class AlbumController {
   @Get('options')
   @ApiOperation({ summary: '获取图册选项' })
   @ApiOkResponse({ description: '获取图册选项成功' })
-  @ApiJsonResultResponse(ALbumOptionsResDto)
+  @ApiJsonResultResponse(AlbumOptionsResDto)
   async albumOptions() {
     return await this.albumService.albumToOptions();
   }
