@@ -84,6 +84,7 @@ function useArticle() {
     setContent,
     saveDraft,
     save,
+    validateInput,
   };
 }
 

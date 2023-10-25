@@ -25,7 +25,12 @@ function AsideMenu() {
           command: () => navigate('/tag'),
         },
         {
-          label: '文章管理',
+          label: '文章列表',
+          icon: 'pi pi-list',
+          command: () => navigate('/article/list'),
+        },
+        {
+          label: '新建文章',
           icon: 'pi pi-file-edit',
           command: () => navigate('/article'),
         },

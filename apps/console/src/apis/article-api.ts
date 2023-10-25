@@ -27,3 +27,26 @@ export async function updateDraftArticle(
     return e as ApiJsonResult<null>;
   }
 }
+
+type SaveArticleReq = {
+  title: string;
+  content: string;
+  status: number;
+  categoryId: number | null;
+  previewUrl: string;
+  isTop: boolean;
+  isFire: boolean;
+  tagIds: number[];
+};
+
+export async function saveArticle(article: SaveArticleReq) {
+  try {
+    const data = await sendRequest('/article', {
+      method: 'POST',
+      body: JSON.stringify(article),
+    });
+    return data;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+}

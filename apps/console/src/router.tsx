@@ -4,6 +4,7 @@ import CategoryPage from './pages/CategoryPage';
 import AlbumPage from './pages/AlbumPage';
 import AlbumPicturePage from './pages/AlbumPicturePage';
 import TagPage from './pages/TagPage';
+import CreateArticlePage from './pages/CreateArticlePage';
 import ArticlePage from './pages/ArticlePage';
 
 const router = createBrowserRouter([
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       },
       {
         path: 'article',
+        element: <CreateArticlePage />,
+      },
+      {
+        path: 'article/list',
         element: <ArticlePage />,
       },
     ],

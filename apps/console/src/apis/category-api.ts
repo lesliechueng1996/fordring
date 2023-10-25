@@ -22,7 +22,9 @@ export function getErrorMsg(code: number) {
   return msg || '未知错误';
 }
 
-export async function createCategory(categoryName: string): Promise<ApiJsonResult<unknown>> {
+export async function createCategory(
+  categoryName: string
+): Promise<ApiJsonResult<unknown>> {
   try {
     const data: ApiJsonResult<unknown> = await sendRequest('/category', {
       method: 'POST',
@@ -88,13 +90,26 @@ export async function getCategoryById(id: number) {
   }
 }
 
-export async function updateCategory(id: number, categoryName: string, version: number) {
+export async function updateCategory(
+  id: number,
+  categoryName: string,
+  version: number
+) {
   try {
     const data = await sendRequest(`/category/${id}`, {
       method: 'PATCH',
       body: JSON.stringify({ categoryName, version }),
     });
     return data;
+  } catch (e) {
+    return e as ApiJsonResult<unknown>;
+  }
+}
+
+export async function categoryOptions() {
+  try {
+    const data = await sendRequest('/category/options');
+    return data as ApiJsonResult<DropdownOption[]>;
   } catch (e) {
     return e as ApiJsonResult<unknown>;
   }

@@ -78,7 +78,12 @@ export async function getTagById(id: number) {
   }
 }
 
-export async function updateTag(id: number, tagName: string, color: string, version: number) {
+export async function updateTag(
+  id: number,
+  tagName: string,
+  color: string,
+  version: number
+) {
   try {
     const data = await sendRequest(`/tag/${id}`, {
       method: 'PATCH',
@@ -96,6 +101,15 @@ export async function removeTag(id: number) {
       method: 'DELETE',
     });
     return data as ApiJsonResult<unknown>;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+}
+
+export async function getTagOptions() {
+  try {
+    const data = await sendRequest(`/tag/options`);
+    return data as ApiJsonResult<Array<DropdownOption>>;
   } catch (e) {
     return e as ApiJsonResult<null>;
   }
