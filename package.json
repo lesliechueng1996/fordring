@@ -2,7 +2,10 @@
   "name": "@fordring/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "nx": "nx",
+    "serve": "nx run-many --target=serve --projects=server,console"
+  },
   "private": true,
   "dependencies": {
     "@nestjs/cache-manager": "^2.1.0",
