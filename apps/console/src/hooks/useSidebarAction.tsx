@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 function useSidebarAction() {
   const [showSidebar, setShowSidebar] = useState({
@@ -6,13 +6,25 @@ function useSidebarAction() {
     edit: false,
   });
 
-  const showCreateSidebar = () => setShowSidebar({ ...showSidebar, create: true });
+  const showCreateSidebar = useCallback(
+    () => setShowSidebar((state) => ({ ...state, create: true })),
+    [setShowSidebar]
+  );
 
-  const showEditSidebar = () => setShowSidebar({ ...showSidebar, edit: true });
+  const showEditSidebar = useCallback(
+    () => setShowSidebar((state) => ({ ...state, edit: true })),
+    [setShowSidebar]
+  );
 
-  const hideCreateSidebar = () => setShowSidebar({ ...showSidebar, create: false });
+  const hideCreateSidebar = useCallback(
+    () => setShowSidebar((state) => ({ ...state, create: false })),
+    [setShowSidebar]
+  );
 
-  const hideEditSidebar = () => setShowSidebar({ ...showSidebar, edit: false });
+  const hideEditSidebar = useCallback(
+    () => setShowSidebar((state) => ({ ...state, edit: false })),
+    [setShowSidebar]
+  );
 
   return {
     showSidebar,
