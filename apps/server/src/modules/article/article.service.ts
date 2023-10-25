@@ -7,6 +7,11 @@ import { ArticlePicture } from 'src/entities/article-picture.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SaveArticleDtoReq } from './dto/save-article.dto';
 import { ArticleTag } from 'src/entities/article-tag.entity';
+import { PageArticleDtoReq, PageArticleResItem } from './dto/page-article.dto';
+import { Category } from 'src/entities/category.entity';
+import { withPageAndOrderQuery } from 'src/utils/query-builder.util';
+import { Tag } from 'src/entities/tag.entity';
+import { BaseEntity } from 'src/entities/base.entity';
 
 @Injectable()
 export class ArticleService {
@@ -14,7 +19,9 @@ export class ArticleService {
 
   constructor(
     private dataSource: DataSource,
-    @InjectRepository(Article) private articleRepository: Repository<Article>
+    @InjectRepository(Article) private articleRepository: Repository<Article>,
+    @InjectRepository(ArticleTag)
+    private articleTagRepository: Repository<ArticleTag>
   ) {}
 
   async saveDraftArticle(title: string, content: string, user: User) {
@@ -191,6 +198,161 @@ export class ArticleService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async getArticlesByPage(query: PageArticleDtoReq) {
+    const {
+      title,
+      status,
+      categoryId,
+      tagId,
+      isTop,
+      isFire,
+      isDraft,
+      currentPage,
+      pageSize,
+      sortField,
+      sortOrder,
+    } = query;
+    let queryBuilder = this.dataSource
+      .createQueryBuilder()
+      .select('article.id', 'id')
+      .addSelect('title')
+      .addSelect('author')
+      .addSelect('status')
+      .addSelect('category.category_name', 'category_name')
+      .addSelect('view_count')
+      .addSelect('preview_url')
+      .addSelect('is_top')
+      .addSelect('is_fire')
+      .addSelect('is_draft')
+      .addSelect('article.version', 'version')
+      .addSelect('article.update_time', 'update_time')
+      .from(Article, 'article')
+      .leftJoin(Category, 'category', 'article.category_id = category.id');
+
+    if (title) {
+      queryBuilder = queryBuilder.andWhere('article.title like :title', {
+        title: `%${title}%`,
+      });
+    }
+
+    if (status !== undefined) {
+      queryBuilder = queryBuilder.andWhere('article.status = :status', {
+        status,
+      });
+    }
+
+    if (categoryId !== undefined) {
+      queryBuilder = queryBuilder.andWhere(
+        'article.category_id = :categoryId',
+        {
+          categoryId,
+        }
+      );
+    }
+
+    if (tagId !== undefined) {
+      const articleIdSet: {
+        articleId: string;
+      }[] = await this.articleTagRepository
+        .createQueryBuilder()
+        .select('distinct article_id', 'articleId')
+        .where('tag_id = :tagId', { tagId })
+        .getRawMany();
+
+      queryBuilder = queryBuilder.andWhere('article.id in (:...articleIdSet)', {
+        articleIdSet: articleIdSet.map((item) => item.articleId),
+      });
+    }
+
+    if (isTop !== undefined) {
+      queryBuilder = queryBuilder.andWhere('article.is_top = :isTop', {
+        isTop,
+      });
+    }
+
+    if (isFire !== undefined) {
+      queryBuilder = queryBuilder.andWhere('article.is_fire = :isFire', {
+        isFire,
+      });
+    }
+
+    if (isDraft !== undefined) {
+      queryBuilder = queryBuilder.andWhere('article.is_draft = :isDraft', {
+        isDraft,
+      });
+    }
+
+    const countQueryBuilder = queryBuilder.clone();
+
+    let newQueryBuilder = this.dataSource
+      .createQueryBuilder()
+      .select('id')
+      .addSelect('title')
+      .addSelect('author')
+      .addSelect('status')
+      .addSelect('category_name', 'categoryName')
+      .addSelect('view_count', 'viewCount')
+      .addSelect('preview_url', 'previewUrl')
+      .addSelect('is_top', 'isTop')
+      .addSelect('is_fire', 'isFire')
+      .addSelect('is_draft', 'isDraft')
+      .addSelect('version', 'version')
+      .addSelect('update_time', 'updateTime')
+      .from('(' + queryBuilder.getQuery() + ')', 't')
+      .setParameters(queryBuilder.getParameters());
+
+    newQueryBuilder = withPageAndOrderQuery(
+      newQueryBuilder,
+      currentPage,
+      pageSize,
+      sortField,
+      sortOrder
+    );
+
+    const [articleList, total] = await Promise.all([
+      newQueryBuilder.getRawMany() as Promise<
+        Omit<PageArticleResItem, 'tags'>[]
+      >,
+      countQueryBuilder.getCount(),
+    ]);
+
+    const currentPageArticleIds = articleList.map((item) => item.id);
+
+    const tagsQueryBuilder = this.dataSource
+      .createQueryBuilder()
+      .select('article_tag.article_id', 'articleId')
+      .addSelect('tag.id', 'id')
+      .addSelect('tag.tag_name', 'tagName')
+      .addSelect('tag.color', 'color')
+      .from(ArticleTag, 'article_tag')
+      .leftJoin(Tag, 'tag', 'article_tag.tag_id = tag.id')
+      .where('article_tag.article_id in (:...articleIds)', {
+        articleIds: currentPageArticleIds,
+      });
+
+    const tags: Array<Omit<Tag, keyof BaseEntity> & { articleId: string }> =
+      await tagsQueryBuilder.getRawMany();
+
+    const tagMap = tags.reduce((acc, cur) => {
+      const { articleId, ...tag } = cur;
+      if (!acc[articleId]) {
+        acc[articleId] = [];
+      }
+      acc[articleId].push(tag);
+      return acc;
+    }, {} as { [key: string]: Array<Omit<Tag, keyof BaseEntity>> });
+
+    const pageArticleList = articleList.map((item) => ({
+      ...item,
+      tags: tagMap[item.id] || [],
+    }));
+
+    return {
+      total,
+      list: pageArticleList,
+    };
   }
 
   /**

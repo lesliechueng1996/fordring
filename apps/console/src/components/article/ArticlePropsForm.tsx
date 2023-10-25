@@ -1,14 +1,11 @@
 import { InputText } from 'primereact/inputtext';
 import { InputSwitch } from 'primereact/inputswitch';
 import { Dropdown } from 'primereact/dropdown';
-import useToast from '../../hooks/useToast';
 import { FormEventHandler, useState } from 'react';
-import { categoryOptions as getCategoryOptions } from '../../apis/category-api';
-import useMount from '../../hooks/useMount';
-import { API_OK } from '../../apis/http-request';
 import { Button } from 'primereact/button';
 import { MultiSelect } from 'primereact/multiselect';
-import { getTagOptions } from '../../apis/tag-api';
+import useCategoryOptions from '../../hooks/useCategoryOptions';
+import useTagOptions from '../../hooks/useTagOptions';
 
 export type FormData = {
   status: boolean;
@@ -31,7 +28,6 @@ type OnFormChange<T extends keyof FormData> = (
 ) => (e: { value: FormData[T] }) => void;
 
 function ArticlePropsForm({ title, onFormSubmit, isPending, initData }: Props) {
-  const { error } = useToast();
   const [data, setData] = useState<Omit<FormData, 'previewUrl'>>(() => {
     return {
       status: initData?.status ?? true,
@@ -41,32 +37,11 @@ function ArticlePropsForm({ title, onFormSubmit, isPending, initData }: Props) {
       tagIds: initData?.tagIds ?? [],
     };
   });
-  const [categoryOptions, setCategoryOptions] = useState<DropdownOption[]>([]);
-  const [tagOptions, setTagOptions] = useState<DropdownOption[]>([]);
-
-  useMount(() => {
-    getCategoryOptions().then((res) => {
-      if (res.code === API_OK) {
-        const options = [
-          {
-            label: '无',
-            value: '',
-          },
-          ...(res.data as DropdownOption[]),
-        ];
-        setCategoryOptions(options);
-      } else {
-        error('获取分类列表失败');
-      }
-    });
-    getTagOptions().then((res) => {
-      if (res.code === API_OK) {
-        setTagOptions(res.data as DropdownOption[]);
-      } else {
-        error('获取标签列表失败');
-      }
-    });
+  const { categoryOptions } = useCategoryOptions({
+    label: '无',
+    value: '',
   });
+  const { tagOptions } = useTagOptions();
 
   const handleFormSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();

@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   NotFoundException,
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -15,6 +17,7 @@ import {
   ApiExtraModels,
   ApiHeader,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -30,6 +33,7 @@ import { UserService } from '../user/user.service';
 import { UpdateDraftDtoReq } from './dto/update-draft.dto';
 import { ARTICLE_ERROR } from 'src/constants/error.const';
 import { SaveArticleDtoReq, SaveArticleDtoRes } from './dto/save-article.dto';
+import { PageArticleDtoReq, PageArticleDtoRes } from './dto/page-article.dto';
 
 @Controller('article')
 @ApiTags('Article')
@@ -66,7 +70,7 @@ export class ArticleController {
 
   @Patch('/draft/:id')
   @ApiOperation({ summary: '更新草稿' })
-  @ApiCreatedResponse({ description: '更新成功' })
+  @ApiOkResponse({ description: '更新成功' })
   @ApiNotFoundResponse({ description: '文章不存在' })
   async updateDraft(@Param('id') id: string, @Body() body: UpdateDraftDtoReq) {
     const { title, content } = body;
@@ -83,7 +87,7 @@ export class ArticleController {
     await this.articleService.updateDraftArticle(id, title, content);
   }
 
-  @Post('/')
+  @Post()
   @ApiOperation({ summary: '保存文章' })
   @ApiCreatedResponse({ description: '保存成功' })
   @ApiJsonResultResponse(SaveArticleDtoRes)
@@ -94,5 +98,13 @@ export class ArticleController {
     return {
       id: article.id,
     };
+  }
+
+  @Get('page')
+  @ApiOperation({ summary: '获取文章列表' })
+  @ApiOkResponse({ description: '获取文章列表成功' })
+  @ApiJsonResultResponse(PageArticleDtoRes)
+  async page(@Query() query: PageArticleDtoReq): Promise<PageArticleDtoRes> {
+    return await this.articleService.getArticlesByPage(query);
   }
 }

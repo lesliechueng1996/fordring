@@ -1,3 +1,4 @@
+import qs from 'qs';
 import { sendRequest } from './http-request';
 
 export async function saveDraftArticle(title: string, content: string) {
@@ -46,6 +47,57 @@ export async function saveArticle(article: SaveArticleReq) {
       body: JSON.stringify(article),
     });
     return data;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+}
+
+export type PageArticleReq = {
+  title: string | undefined;
+  status: number | undefined;
+  categoryId: number | undefined;
+  tagId: number | undefined;
+  isTop: boolean | undefined;
+  isFire: boolean | undefined;
+  isDraft: boolean | undefined;
+  currentPage: number;
+  pageSize: number;
+  sortField: string | undefined | null;
+  sortOrder: 'ASC' | 'DESC' | '' | undefined | null;
+};
+
+export type PageArticleItem = {
+  id: string;
+  title: string;
+  author: string;
+  status: number;
+  categoryName: string;
+  viewCount: number;
+  previewUrl: string | null;
+  isTop: boolean;
+  isFire: boolean;
+  isDraft: boolean;
+  version: number;
+  updateTime: number;
+  tags: {
+    id: number;
+    tagName: string;
+    color: string;
+  }[];
+};
+
+export type PageArticleData = {
+  total: number;
+  list: PageArticleItem[];
+};
+
+export async function getArticlesByPage(query: PageArticleReq) {
+  try {
+    const data = await sendRequest(`/article/page?${qs.stringify(query)}`);
+    return data as ApiJsonResult<{
+      total: number;
+      list: PageArticleItem[];
+    }>;
   } catch (e) {
     return e as ApiJsonResult<null>;
   }

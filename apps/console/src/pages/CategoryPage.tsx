@@ -32,7 +32,13 @@ function CategoryPage() {
   } = useCategory();
   const showConfirm = useConfirmPopup();
 
-  const { showSidebar, showCreateSidebar, showEditSidebar, hideCreateSidebar, hideEditSidebar } = useSidebarAction();
+  const {
+    showSidebar,
+    showCreateSidebar,
+    showEditSidebar,
+    hideCreateSidebar,
+    hideEditSidebar,
+  } = useSidebarAction();
 
   const [editId, setEditId] = useState<number | null>(null);
 
@@ -48,7 +54,9 @@ function CategoryPage() {
     hideEditSidebar();
   };
 
-  const confirmDelete: (rowData: CategoryPageItem) => MouseEventHandler<HTMLButtonElement> =
+  const confirmDelete: (
+    rowData: CategoryPageItem
+  ) => MouseEventHandler<HTMLButtonElement> =
     (rowData: CategoryPageItem) => (event) => {
       showConfirm(event.currentTarget, () => deleteCategory(rowData.id));
     };
@@ -56,8 +64,16 @@ function CategoryPage() {
   const actionBodyTemplate = (rowData: CategoryPageItem) => {
     return (
       <div className="space-x-3">
-        <Button label="编辑" severity="help" onClick={handleEditClick(rowData.id)} />
-        <Button label="删除" severity="danger" onClick={confirmDelete(rowData)} />
+        <Button
+          label="编辑"
+          severity="help"
+          onClick={handleEditClick(rowData.id)}
+        />
+        <Button
+          label="删除"
+          severity="danger"
+          onClick={confirmDelete(rowData)}
+        />
       </div>
     );
   };
@@ -76,12 +92,27 @@ function CategoryPage() {
             <label htmlFor="categoryName">类别名</label>
           </span>
 
-          <Button label="搜索" icon="pi pi-search" loading={isLoading} onClick={() => search()} />
-          <Button label="清除" icon="pi pi-filter-slash" severity="warning" onClick={clear} />
+          <Button
+            label="搜索"
+            icon="pi pi-search"
+            loading={isLoading}
+            onClick={() => search()}
+          />
+          <Button
+            label="清除"
+            icon="pi pi-filter-slash"
+            severity="warning"
+            onClick={clear}
+          />
         </div>
 
         <div>
-          <Button label="新增" icon="pi pi-plus" severity="success" onClick={showCreateSidebar} />
+          <Button
+            label="新增"
+            icon="pi pi-plus"
+            severity="success"
+            onClick={showCreateSidebar}
+          />
         </div>
       </div>
       <div>
@@ -104,8 +135,19 @@ function CategoryPage() {
           currentPageReportTemplate="{first} 至 {last} 总计 {totalRecords}"
           emptyMessage="暂无数据"
         >
-          <Column field="categoryName" header="分类名" sortable sortField="category_name" />
-          <Column field="createTime" header="创建时间" sortable sortField="create_time" body={CreateTimeColumnBody} />
+          <Column
+            field="categoryName"
+            header="分类名"
+            sortable
+            sortField="category_name"
+          />
+          <Column
+            field="createTime"
+            header="创建时间"
+            sortable
+            sortField="create_time"
+            body={CreateTimeColumnBody}
+          />
           <Column header="操作" body={actionBodyTemplate} />
         </DataTable>
       </div>
@@ -119,9 +161,12 @@ function CategoryPage() {
         />
       </Sidebar>
 
-      <Sidebar visible={showSidebar.edit && editId !== null} onHide={handleHideEditSidebar}>
+      <Sidebar
+        visible={showSidebar.edit && editId !== null}
+        onHide={handleHideEditSidebar}
+      >
         <EditCategory
-          id={editId!}
+          id={editId as number}
           onSuccess={() => {
             handleHideEditSidebar();
             search();
