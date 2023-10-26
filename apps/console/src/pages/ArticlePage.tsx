@@ -120,7 +120,7 @@ function ArticlePage() {
         <Button
           label="编辑"
           severity="help"
-          // onClick={handleEditClick(rowData.id)}
+          onClick={() => navigate(`/article/${rowData.id}`)}
         />
         <Button
           label="删除"
