@@ -10,6 +10,7 @@ import {
   deleteArticle,
   getArticlesByPage,
   updateArticleFire,
+  updateArticleStatus,
   updateArticleTop,
 } from '../apis/article-api';
 import { DataTableStateEvent } from 'primereact/datatable';
@@ -170,6 +171,17 @@ function useArticlePage() {
     });
   };
 
+  const updateStatus = (id: string, status: number, version: number) => {
+    updateArticleStatus(id, status, version).then((res) => {
+      if (res.code === API_OK) {
+        search();
+        success('更新文章状态成功');
+      } else {
+        error('更新文章状态失败');
+      }
+    });
+  };
+
   return {
     queryParam,
     setQueryParam,
@@ -186,6 +198,7 @@ function useArticlePage() {
     removeArticle,
     udpateIsTop,
     updateIsFire,
+    updateStatus,
   };
 }
 

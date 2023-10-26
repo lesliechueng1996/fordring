@@ -38,6 +38,7 @@ import { SaveArticleDtoReq, SaveArticleDtoRes } from './dto/save-article.dto';
 import { PageArticleDtoReq, PageArticleDtoRes } from './dto/page-article.dto';
 import {
   UpdateArticleFireFlagDtoReq,
+  UpdateArticleStatusDtoReq,
   UpdateArticleTopFlagDtoReq,
 } from './dto/update-article-flag.dto';
 
@@ -130,7 +131,7 @@ export class ArticleController {
     @Body() body: UpdateArticleTopFlagDtoReq
   ) {
     const { isTop, version } = body;
-    await this.articleService.updateArticleFlag(id, 'isTop', isTop, version);
+    await this.articleService.updateArticleField(id, 'isTop', isTop, version);
   }
 
   @Patch(':id/fire')
@@ -142,6 +143,18 @@ export class ArticleController {
     @Body() body: UpdateArticleFireFlagDtoReq
   ) {
     const { isFire, version } = body;
-    await this.articleService.updateArticleFlag(id, 'isFire', isFire, version);
+    await this.articleService.updateArticleField(id, 'isFire', isFire, version);
+  }
+
+  @Patch(':id/status')
+  @ApiOperation({ summary: '更新文章状态' })
+  @ApiOkResponse({ description: '更新成功' })
+  @ApiConflictResponse({ description: '更新失败，文章版本不一致' })
+  async updateArticleStatus(
+    @Param('id') id: string,
+    @Body() body: UpdateArticleStatusDtoReq
+  ) {
+    const { status, version } = body;
+    await this.articleService.updateArticleField(id, 'status', status, version);
   }
 }

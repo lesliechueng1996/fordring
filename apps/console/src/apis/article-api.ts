@@ -145,3 +145,19 @@ export async function updateArticleFire(
     return e as ApiJsonResult<null>;
   }
 }
+
+export async function updateArticleStatus(
+  id: string,
+  status: number,
+  version: number
+) {
+  try {
+    const data = await sendRequest(`/article/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, version }),
+    });
+    return data;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+}

@@ -386,10 +386,10 @@ export class ArticleService {
     }
   }
 
-  async updateArticleFlag(
+  async updateArticleField<T extends string & keyof Article>(
     articleId: string,
-    flagKey: 'isTop' | 'isFire' | 'isDraft',
-    value: boolean,
+    flagKey: T,
+    value: Article[T],
     version: number
   ) {
     const result = await this.articleRepository.update(

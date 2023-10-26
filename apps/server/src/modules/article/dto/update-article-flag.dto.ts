@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber } from 'class-validator';
+import { IsBoolean, IsEnum, IsNumber } from 'class-validator';
+import { ArticleStatus } from 'src/entities/article.entity';
 
 export class UpdateArticleTopFlagDtoReq {
   @ApiProperty({ description: '是否置顶' })
@@ -15,6 +16,16 @@ export class UpdateArticleFireFlagDtoReq {
   @ApiProperty({ description: '是否精华' })
   @IsBoolean()
   isFire: boolean;
+
+  @ApiProperty({ description: '文章版本' })
+  @IsNumber()
+  version: number;
+}
+
+export class UpdateArticleStatusDtoReq {
+  @ApiProperty({ description: '文章状态' })
+  @IsEnum([ArticleStatus.HIDDEN, ArticleStatus.SHOW])
+  status: number;
 
   @ApiProperty({ description: '文章版本' })
   @IsNumber()

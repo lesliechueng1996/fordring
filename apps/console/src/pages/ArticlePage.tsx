@@ -16,12 +16,9 @@ import toDateString from '../utils/toDateString';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmPopup } from 'primereact/confirmpopup';
 import useConfirmPopup from '../hooks/useConfirmPopup';
+import { SelectButton } from 'primereact/selectbutton';
 
-const StatusOptions = [
-  {
-    label: '全部',
-    value: '',
-  },
+const StatusOptionsSelectButton = [
   {
     label: '显示',
     value: '1',
@@ -30,6 +27,14 @@ const StatusOptions = [
     label: '隐藏',
     value: '0',
   },
+];
+
+const StatusOptions = [
+  {
+    label: '全部',
+    value: '',
+  },
+  ...StatusOptionsSelectButton,
 ];
 
 const YesNoOptions = [
@@ -47,27 +52,6 @@ const YesNoOptions = [
   },
 ];
 
-const StatusMapping: {
-  [key: number]: {
-    text: string;
-    severity: 'success' | 'warning';
-  };
-} = {
-  1: {
-    text: '显示',
-    severity: 'success',
-  },
-  0: {
-    text: '隐藏',
-    severity: 'warning',
-  },
-};
-
-function ArticleStatusColumnBody(rowData: PageArticleItem) {
-  const { text, severity } = StatusMapping[rowData.status];
-  return <Tag value={text} severity={severity} />;
-}
-
 function ArticlePage() {
   const {
     queryParam,
@@ -84,6 +68,7 @@ function ArticlePage() {
     removeArticle,
     updateIsFire,
     udpateIsTop,
+    updateStatus,
   } = useArticlePage();
   const { categoryOptions } = useCategoryOptions({
     label: '全部',
@@ -130,6 +115,19 @@ function ArticlePage() {
       </div>
     );
   };
+
+  function ArticleStatusColumnBody(rowData: PageArticleItem) {
+    return (
+      <SelectButton
+        value={rowData.status.toString()}
+        onChange={(e) =>
+          updateStatus(rowData.id, parseInt(e.value, 10), rowData.version)
+        }
+        options={StatusOptionsSelectButton}
+        allowEmpty={false}
+      />
+    );
+  }
 
   return (
     <div className="space-y-10">
