@@ -20,6 +20,7 @@ import { BaseEntity } from 'src/entities/base.entity';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
 import { ARTICLE_ERROR } from 'src/constants/error.const';
 import { GetArticleResDto } from './dto/get-article.dto';
+import { UpdateArticleDtoReq } from './dto/update-article.dto';
 
 @Injectable()
 export class ArticleService {
@@ -452,6 +453,91 @@ export class ArticleService {
           'Article version conflict'
         )
       );
+    }
+  }
+
+  async updateArticle(id: string, body: UpdateArticleDtoReq) {
+    const {
+      title,
+      content,
+      status,
+      categoryId,
+      previewUrl,
+      isTop,
+      isFire,
+      tagIds,
+      version,
+    } = body;
+
+    const images = this.collectImageFromArticle(content);
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // update article
+      const updateResult = await queryRunner.manager.update(
+        Article,
+        {
+          id,
+          version,
+        },
+        {
+          title,
+          content,
+          status,
+          categoryId,
+          previewUrl,
+          isTop,
+          isFire,
+        }
+      );
+
+      if (updateResult.affected === 0) {
+        throw new ConflictException(
+          ApiJsonResult.error(
+            ARTICLE_ERROR.ARTICLE_VERSION_CONFLICT,
+            'Article version conflict'
+          )
+        );
+      }
+
+      // update images
+      const articlePictures = Object.keys(images).map((id) => ({
+        articleId: id,
+        pictureId: parseInt(id, 10),
+      }));
+
+      await queryRunner.manager.delete(ArticlePicture, {
+        articleId: id,
+      });
+
+      if (articlePictures.length > 0) {
+        await queryRunner.manager.save(ArticlePicture, articlePictures);
+      }
+
+      // update tags
+      await queryRunner.manager.delete(ArticleTag, {
+        articleId: id,
+      });
+
+      if (tagIds.length > 0) {
+        await queryRunner.manager.save(
+          ArticleTag,
+          tagIds.map((tagId) => ({
+            articleId: id,
+            tagId,
+          }))
+        );
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.logger.error(err);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
     }
   }
 

@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -42,6 +43,7 @@ import {
   UpdateArticleTopFlagDtoReq,
 } from './dto/update-article-flag.dto';
 import { GetArticleResDto } from './dto/get-article.dto';
+import { UpdateArticleDtoReq } from './dto/update-article.dto';
 
 @Controller('article')
 @ApiTags('Article')
@@ -108,10 +110,10 @@ export class ArticleController {
     };
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: '更新文章' })
+  @Put(':id')
+  @ApiOperation({ summary: '草稿保存为文章' })
   @ApiOkResponse({ description: '更新成功' })
-  @ApiNotFoundResponse({ description: '文章不存在' })
+  @ApiNotFoundResponse({ description: '草稿不存在' })
   async draftToArticle(
     @Param('id') id: string,
     @Body() body: SaveArticleDtoReq,
@@ -123,6 +125,17 @@ export class ArticleController {
     return {
       id: article.id,
     };
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: '更新文章' })
+  @ApiOkResponse({ description: '更新成功' })
+  @ApiNotFoundResponse({ description: '文章不存在' })
+  async updateArticle(
+    @Param('id') id: string,
+    @Body() body: UpdateArticleDtoReq
+  ) {
+    await this.articleService.updateArticle(id, body);
   }
 
   @Get('page')
@@ -181,6 +194,6 @@ export class ArticleController {
   @ApiOkResponse({ description: '获取文章详情成功' })
   @ApiJsonResultResponse(GetArticleResDto)
   async getArticleById(@Param('id') id: string) {
-    return await this.articleService.getArticleById(id);
+    return await this.articleService.getArticleWithTagsById(id);
   }
 }

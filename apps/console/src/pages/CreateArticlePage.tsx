@@ -18,8 +18,16 @@ function CreateArticlePage() {
     hideCreateSidebar: hidePropsCreateSidebar,
   } = useSidebarAction();
 
-  const handleOnSave = async (article: SaveArticleReq) => {
-    await save(article);
+  const handleOnSave = async (
+    article: Omit<SaveArticleReq, 'title' | 'content'>
+  ) => {
+    if (!articleRef.current) {
+      return;
+    }
+    await save({
+      ...articleRef.current,
+      ...article,
+    });
     navigate('/article/list');
   };
 
@@ -38,13 +46,7 @@ function CreateArticlePage() {
         visible={showPropsSidebar.create}
         onHide={hidePropsCreateSidebar}
       >
-        {articleRef.current && (
-          <CreateArticleProps
-            title={articleRef.current.title}
-            content={articleRef.current.content}
-            onSuccess={handleOnSave}
-          />
-        )}
+        <CreateArticleProps onSuccess={handleOnSave} />
       </Sidebar>
     </div>
   );

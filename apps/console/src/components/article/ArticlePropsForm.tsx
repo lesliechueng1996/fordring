@@ -1,7 +1,7 @@
 import { InputText } from 'primereact/inputtext';
 import { InputSwitch } from 'primereact/inputswitch';
 import { Dropdown } from 'primereact/dropdown';
-import { FormEventHandler, useState } from 'react';
+import { FormEventHandler, useEffect, useState } from 'react';
 import { Button } from 'primereact/button';
 import { MultiSelect } from 'primereact/multiselect';
 import useCategoryOptions from '../../hooks/useCategoryOptions';
@@ -28,15 +28,26 @@ type OnFormChange<T extends keyof FormData> = (
 ) => (e: { value: FormData[T] }) => void;
 
 function ArticlePropsForm({ title, onFormSubmit, isPending, initData }: Props) {
-  const [data, setData] = useState<Omit<FormData, 'previewUrl'>>(() => {
-    return {
-      status: initData?.status ?? true,
-      categoryId: initData?.categoryId ?? '',
-      isTop: initData?.isTop ?? false,
-      isFire: initData?.isFire ?? false,
-      tagIds: initData?.tagIds ?? [],
-    };
+  const [data, setData] = useState<Omit<FormData, 'previewUrl'>>({
+    status: true,
+    categoryId: '',
+    isTop: false,
+    isFire: false,
+    tagIds: [],
   });
+
+  useEffect(() => {
+    if (initData) {
+      setData({
+        status: initData.status,
+        categoryId: initData.categoryId,
+        isTop: initData.isTop,
+        isFire: initData.isFire,
+        tagIds: initData.tagIds,
+      });
+    }
+  }, [initData]);
+
   const { categoryOptions } = useCategoryOptions({
     label: '无',
     value: '',

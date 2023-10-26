@@ -6,9 +6,10 @@ type Props = {
   onSuccess: (
     article: Omit<SaveArticleReq, 'title' | 'content'>
   ) => Promise<void>;
+  initData: Omit<SaveArticleReq, 'title' | 'content'>;
 };
 
-function CreateArticleProps({ onSuccess }: Props) {
+function EditArticleProps({ onSuccess, initData }: Props) {
   const [isPending, setIsPending] = useState(false);
 
   const handleFormSubmit = (data: FormData) => {
@@ -29,11 +30,19 @@ function CreateArticleProps({ onSuccess }: Props) {
 
   return (
     <ArticlePropsForm
-      title="新建文章"
+      title="编辑文章"
       isPending={isPending}
       onFormSubmit={handleFormSubmit}
+      initData={{
+        status: initData.status === 1,
+        categoryId: initData.categoryId?.toString() || '',
+        previewUrl: initData.previewUrl,
+        isTop: initData.isTop,
+        isFire: initData.isFire,
+        tagIds: initData.tagIds.map((id) => id.toString()),
+      }}
     />
   );
 }
 
-export default CreateArticleProps;
+export default EditArticleProps;

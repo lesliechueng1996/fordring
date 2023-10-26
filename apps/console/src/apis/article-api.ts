@@ -58,7 +58,7 @@ export async function draftToArticle(
 ) {
   try {
     const data = await sendRequest(`/article/${articleId}`, {
-      method: 'PATCH',
+      method: 'PUT',
       body: JSON.stringify(article),
     });
     return data;
@@ -195,6 +195,20 @@ export type GetArticleRes = {
 export async function getArticle(id: string) {
   try {
     const data = await sendRequest(`/article/${id}`);
+    return data;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+}
+
+export type UpdateArticleRea = SaveArticleReq & { version: number };
+
+export async function updateArticle(id: string, article: UpdateArticleRea) {
+  try {
+    const data = await sendRequest(`/article/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(article),
+    });
     return data;
   } catch (e) {
     return e as ApiJsonResult<null>;
