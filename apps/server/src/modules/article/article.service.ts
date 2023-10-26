@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { User } from 'src/entities/user.entity';
 import { ARTICLE_IMAGE_PREFIX } from 'src/constants/fordring.const';
 import { DataSource, Repository } from 'typeorm';
@@ -12,6 +12,8 @@ import { Category } from 'src/entities/category.entity';
 import { withPageAndOrderQuery } from 'src/utils/query-builder.util';
 import { Tag } from 'src/entities/tag.entity';
 import { BaseEntity } from 'src/entities/base.entity';
+import { ApiJsonResult } from 'src/dto/api-json-result.dto';
+import { ARTICLE_ERROR } from 'src/constants/error.const';
 
 @Injectable()
 export class ArticleService {
@@ -353,6 +355,60 @@ export class ArticleService {
       total,
       list: pageArticleList,
     };
+  }
+
+  async deleteArticleById(id: string) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // delete article
+      await queryRunner.manager.delete(Article, {
+        id,
+      });
+
+      // delete article picture
+      await queryRunner.manager.delete(ArticlePicture, {
+        articleId: id,
+      });
+
+      // delete article tag
+      await queryRunner.manager.delete(ArticleTag, {
+        articleId: id,
+      });
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.logger.error(err);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async updateArticleFlag(
+    articleId: string,
+    flagKey: 'isTop' | 'isFire' | 'isDraft',
+    value: boolean,
+    version: number
+  ) {
+    const result = await this.articleRepository.update(
+      {
+        id: articleId,
+        version,
+      },
+      {
+        [flagKey]: value,
+      }
+    );
+    if (result.affected === 0) {
+      throw new ConflictException(
+        ApiJsonResult.error(
+          ARTICLE_ERROR.ARTICLE_VERSION_CONFLICT,
+          'Article version conflict'
+        )
+      );
+    }
   }
 
   /**

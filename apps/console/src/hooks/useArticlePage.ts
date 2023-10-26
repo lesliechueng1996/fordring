@@ -5,10 +5,17 @@ import {
   sortOrderToStr,
   usePaginationAndSortFromUrl,
 } from './usePaginationAndSort';
-import { PageArticleData, getArticlesByPage } from '../apis/article-api';
+import {
+  PageArticleData,
+  deleteArticle,
+  getArticlesByPage,
+  updateArticleFire,
+  updateArticleTop,
+} from '../apis/article-api';
 import { DataTableStateEvent } from 'primereact/datatable';
 import changeValueToStr from '../utils/changeValueToStr';
 import useToast from './useToast';
+import { API_OK } from '../apis/http-request';
 
 export type QueryParam = {
   title: string;
@@ -55,7 +62,7 @@ function useArticlePage() {
     }
   );
 
-  const { error } = useToast();
+  const { error, success } = useToast();
 
   const handlePageAndSortChange = (e: DataTableStateEvent) => {
     const paginationAndSort = setPaginationAndSort(
@@ -130,6 +137,39 @@ function useArticlePage() {
     _search(emptyQueryParam, currentPage, pageSize, sortField || '', sortOrder);
   };
 
+  const removeArticle = (id: string) => {
+    deleteArticle(id).then((res) => {
+      if (res.code === 0) {
+        search();
+        success('删除文章成功');
+      } else {
+        error('删除文章失败');
+      }
+    });
+  };
+
+  const udpateIsTop = (id: string, isTop: boolean, version: number) => {
+    updateArticleTop(id, isTop, version).then((res) => {
+      if (res.code === API_OK) {
+        search();
+        success('更新文章置顶状态成功');
+      } else {
+        error('更新文章置顶状态失败');
+      }
+    });
+  };
+
+  const updateIsFire = (id: string, isFire: boolean, version: number) => {
+    updateArticleFire(id, isFire, version).then((res) => {
+      if (res.code === API_OK) {
+        search();
+        success('更新文章精华状态成功');
+      } else {
+        error('更新文章精华状态失败');
+      }
+    });
+  };
+
   return {
     queryParam,
     setQueryParam,
@@ -143,6 +183,9 @@ function useArticlePage() {
     handlePageAndSortChange,
     search,
     clear,
+    removeArticle,
+    udpateIsTop,
+    updateIsFire,
   };
 }
 

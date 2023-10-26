@@ -81,6 +81,9 @@ function ArticlePage() {
     handlePageAndSortChange,
     search,
     clear,
+    removeArticle,
+    updateIsFire,
+    udpateIsTop,
   } = useArticlePage();
   const { categoryOptions } = useCategoryOptions({
     label: '全部',
@@ -103,7 +106,7 @@ function ArticlePage() {
     rowData: PageArticleItem
   ) => MouseEventHandler<HTMLButtonElement> =
     (rowData: PageArticleItem) => (event) => {
-      showConfirm(event.currentTarget, () => console.log(rowData.id));
+      showConfirm(event.currentTarget, () => removeArticle(rowData.id));
     };
 
   const handleDropdownChange =
@@ -264,14 +267,24 @@ function ArticlePage() {
           <Column
             field="isTop"
             header="置顶"
-            body={(data) => <InputSwitch checked={data.isTop} />}
+            body={(data: PageArticleItem) => (
+              <InputSwitch
+                checked={data.isTop}
+                onChange={(e) => udpateIsTop(data.id, e.value, data.version)}
+              />
+            )}
             sortable
             sortField="is_top"
           />
           <Column
             field="isFire"
             header="精华"
-            body={(data) => <InputSwitch checked={data.isFire} />}
+            body={(data: PageArticleItem) => (
+              <InputSwitch
+                checked={data.isFire}
+                onChange={(e) => updateIsFire(data.id, e.value, data.version)}
+              />
+            )}
             sortable
             sortField="is_fire"
           />
@@ -281,6 +294,21 @@ function ArticlePage() {
             body={(data) => (data.isDraft ? '是' : '否')}
             sortable
             sortField="is_draft"
+          />
+          <Column
+            header="标签"
+            body={(data: PageArticleItem) => (
+              <div className="flex gap-3 flex-wrap">
+                {data.tags &&
+                  data.tags.map((tag) => (
+                    <Tag
+                      key={tag.id}
+                      value={tag.tagName}
+                      style={{ backgroundColor: `#${tag.color}` }}
+                    />
+                  ))}
+              </div>
+            )}
           />
           <Column
             field="updateTime"

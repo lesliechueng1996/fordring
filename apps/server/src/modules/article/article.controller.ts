@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -13,6 +14,7 @@ import {
 import { ArticleService } from './article.service';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiExtraModels,
   ApiHeader,
@@ -34,6 +36,10 @@ import { UpdateDraftDtoReq } from './dto/update-draft.dto';
 import { ARTICLE_ERROR } from 'src/constants/error.const';
 import { SaveArticleDtoReq, SaveArticleDtoRes } from './dto/save-article.dto';
 import { PageArticleDtoReq, PageArticleDtoRes } from './dto/page-article.dto';
+import {
+  UpdateArticleFireFlagDtoReq,
+  UpdateArticleTopFlagDtoReq,
+} from './dto/update-article-flag.dto';
 
 @Controller('article')
 @ApiTags('Article')
@@ -106,5 +112,36 @@ export class ArticleController {
   @ApiJsonResultResponse(PageArticleDtoRes)
   async page(@Query() query: PageArticleDtoReq): Promise<PageArticleDtoRes> {
     return await this.articleService.getArticlesByPage(query);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: '删除文章' })
+  @ApiOkResponse({ description: '删除成功' })
+  async deleteArticle(@Param('id') id: string) {
+    await this.articleService.deleteArticleById(id);
+  }
+
+  @Patch(':id/top')
+  @ApiOperation({ summary: '更新文章置顶状态' })
+  @ApiOkResponse({ description: '更新成功' })
+  @ApiConflictResponse({ description: '更新失败，文章版本不一致' })
+  async updateArticleTop(
+    @Param('id') id: string,
+    @Body() body: UpdateArticleTopFlagDtoReq
+  ) {
+    const { isTop, version } = body;
+    await this.articleService.updateArticleFlag(id, 'isTop', isTop, version);
+  }
+
+  @Patch(':id/fire')
+  @ApiOperation({ summary: '更新文章精华状态' })
+  @ApiOkResponse({ description: '更新成功' })
+  @ApiConflictResponse({ description: '更新失败，文章版本不一致' })
+  async updateArticleFire(
+    @Param('id') id: string,
+    @Body() body: UpdateArticleFireFlagDtoReq
+  ) {
+    const { isFire, version } = body;
+    await this.articleService.updateArticleFlag(id, 'isFire', isFire, version);
   }
 }

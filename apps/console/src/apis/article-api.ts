@@ -102,3 +102,46 @@ export async function getArticlesByPage(query: PageArticleReq) {
     return e as ApiJsonResult<null>;
   }
 }
+
+export async function deleteArticle(id: string) {
+  try {
+    const data = await sendRequest(`/article/${id}`, {
+      method: 'DELETE',
+    });
+    return data;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+}
+
+export async function updateArticleTop(
+  id: string,
+  isTop: boolean,
+  version: number
+) {
+  try {
+    const data = await sendRequest(`/article/${id}/top`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isTop, version }),
+    });
+    return data;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+}
+
+export async function updateArticleFire(
+  id: string,
+  isFire: boolean,
+  version: number
+) {
+  try {
+    const data = await sendRequest(`/article/${id}/fire`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isFire, version }),
+    });
+    return data;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+}
