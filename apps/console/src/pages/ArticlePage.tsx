@@ -105,7 +105,11 @@ function ArticlePage() {
         <Button
           label="编辑"
           severity="help"
-          onClick={() => navigate(`/article/${rowData.id}`)}
+          onClick={() =>
+            rowData.isDraft
+              ? navigate(`/article?articleId=${rowData.id}`)
+              : navigate(`/article/${rowData.id}`)
+          }
         />
         <Button
           label="删除"

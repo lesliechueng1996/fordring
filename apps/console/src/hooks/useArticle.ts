@@ -1,54 +1,48 @@
-import { useState } from 'react';
 import useToast from './useToast';
-import { saveDraftArticle, updateDraftArticle } from '../apis/article-api';
+import {
+  GetArticleRes,
+  SaveArticleReq,
+  draftToArticle,
+  getArticle,
+  saveArticle,
+  saveDraftArticle,
+  updateDraftArticle,
+} from '../apis/article-api';
 import { API_OK } from '../apis/http-request';
 import { useSearchParams } from 'react-router-dom';
+import type { Article } from '../components/article/ArticleForm';
+import useMount from './useMount';
+import { useState } from 'react';
 
 const ARTICLE_ID = 'articleId';
 
-type Article = {
-  title: string;
-  content: string;
-};
-
 function useArticle() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const articleId = searchParams.get(ARTICLE_ID);
-
-  const [article, setArticle] = useState<Article>({
+  const [initArticle, setInitArticle] = useState<Article>({
     title: '',
     content: '',
   });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const articleId = searchParams.get(ARTICLE_ID);
+
   const { error, success } = useToast();
 
-  const setTitle = (title: string) => {
-    setArticle({
-      ...article,
-      title,
-    });
-  };
-
-  const setContent = (content: string) => {
-    setArticle({
-      ...article,
-      content,
-    });
-  };
-
-  const validateInput = () => {
-    const { title } = article;
-    if (!title) {
-      error('请输入标题');
-      return false;
+  useMount(() => {
+    if (articleId) {
+      getArticle(articleId).then((res) => {
+        if (res.code === API_OK) {
+          const article = res.data as GetArticleRes;
+          if (article.isDraft) {
+            setInitArticle({
+              title: article.title,
+              content: article.content,
+            });
+          }
+        }
+      });
     }
-    return true;
-  };
+  });
 
-  const saveDraft = () => {
-    if (!validateInput()) {
-      return;
-    }
-
+  const saveDraft = (article: Article) => {
     const { title, content } = article;
 
     if (articleId) {
@@ -72,19 +66,30 @@ function useArticle() {
     }
   };
 
-  const save = () => {
-    if (!validateInput()) {
-      return;
+  const save = async (article: SaveArticleReq) => {
+    if (articleId) {
+      return draftToArticle(article, articleId).then((res) => {
+        if (res.code === API_OK) {
+          success('保存成功');
+        } else {
+          error('保存失败');
+        }
+      });
+    } else {
+      return saveArticle(article).then((res) => {
+        if (res.code === API_OK) {
+          success('保存成功');
+        } else {
+          error('保存失败');
+        }
+      });
     }
   };
 
   return {
-    ...article,
-    setTitle,
-    setContent,
-    saveDraft,
     save,
-    validateInput,
+    saveDraft,
+    initArticle,
   };
 }
 

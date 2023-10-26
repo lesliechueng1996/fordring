@@ -1,18 +1,15 @@
 import { useState } from 'react';
 import ArticlePropsForm, { FormData } from './ArticlePropsForm';
-import { saveArticle } from '../../apis/article-api';
-import { API_OK } from '../../apis/http-request';
-import useToast from '../../hooks/useToast';
+import { SaveArticleReq } from '../../apis/article-api';
 
 type Props = {
   title: string;
   content: string;
-  onSuccess: (id: string) => void;
+  onSuccess: (article: SaveArticleReq) => Promise<void>;
 };
 
 function CreateArticleProps({ title, content, onSuccess }: Props) {
   const [isPending, setIsPending] = useState(false);
-  const { error, success } = useToast();
 
   const handleFormSubmit = (data: FormData) => {
     const { categoryId, isFire, isTop, previewUrl, status, tagIds } = data;
@@ -29,19 +26,7 @@ function CreateArticleProps({ title, content, onSuccess }: Props) {
     };
 
     setIsPending(true);
-    saveArticle(article)
-      .then((res) => {
-        if (res.code === API_OK) {
-          const { id } = res.data as {
-            id: string;
-          };
-          onSuccess(id);
-          success('保存成功');
-        } else {
-          error('保存失败');
-        }
-      })
-      .finally(() => setIsPending(false));
+    onSuccess(article).finally(() => setIsPending(false));
   };
 
   return (

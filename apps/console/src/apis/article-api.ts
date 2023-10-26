@@ -29,7 +29,7 @@ export async function updateDraftArticle(
   }
 }
 
-type SaveArticleReq = {
+export type SaveArticleReq = {
   title: string;
   content: string;
   status: number;
@@ -44,6 +44,21 @@ export async function saveArticle(article: SaveArticleReq) {
   try {
     const data = await sendRequest('/article', {
       method: 'POST',
+      body: JSON.stringify(article),
+    });
+    return data;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+}
+
+export async function draftToArticle(
+  article: SaveArticleReq,
+  articleId: string
+) {
+  try {
+    const data = await sendRequest(`/article/${articleId}`, {
+      method: 'PATCH',
       body: JSON.stringify(article),
     });
     return data;
@@ -156,6 +171,30 @@ export async function updateArticleStatus(
       method: 'PATCH',
       body: JSON.stringify({ status, version }),
     });
+    return data;
+  } catch (e) {
+    return e as ApiJsonResult<null>;
+  }
+}
+
+export type GetArticleRes = {
+  id: string;
+  title: string;
+  author: string;
+  content: string;
+  status: number;
+  categoryId: number | null;
+  previewUrl: string | null;
+  isTop: boolean;
+  isFire: boolean;
+  isDraft: boolean;
+  version: number;
+  tags: number[];
+};
+
+export async function getArticle(id: string) {
+  try {
+    const data = await sendRequest(`/article/${id}`);
     return data;
   } catch (e) {
     return e as ApiJsonResult<null>;

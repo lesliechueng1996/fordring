@@ -41,6 +41,7 @@ import {
   UpdateArticleStatusDtoReq,
   UpdateArticleTopFlagDtoReq,
 } from './dto/update-article-flag.dto';
+import { GetArticleResDto } from './dto/get-article.dto';
 
 @Controller('article')
 @ApiTags('Article')
@@ -107,6 +108,23 @@ export class ArticleController {
     };
   }
 
+  @Patch(':id')
+  @ApiOperation({ summary: '更新文章' })
+  @ApiOkResponse({ description: '更新成功' })
+  @ApiNotFoundResponse({ description: '文章不存在' })
+  async draftToArticle(
+    @Param('id') id: string,
+    @Body() body: SaveArticleDtoReq,
+    @Req() req: Request
+  ) {
+    const userId: string = req[USER_ID_KEY];
+    const user = await this.userService.getUserById(userId);
+    const article = await this.articleService.saveArticle(body, user, id);
+    return {
+      id: article.id,
+    };
+  }
+
   @Get('page')
   @ApiOperation({ summary: '获取文章列表' })
   @ApiOkResponse({ description: '获取文章列表成功' })
@@ -156,5 +174,13 @@ export class ArticleController {
   ) {
     const { status, version } = body;
     await this.articleService.updateArticleField(id, 'status', status, version);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: '获取文章详情' })
+  @ApiOkResponse({ description: '获取文章详情成功' })
+  @ApiJsonResultResponse(GetArticleResDto)
+  async getArticleById(@Param('id') id: string) {
+    return await this.articleService.getArticleById(id);
   }
 }

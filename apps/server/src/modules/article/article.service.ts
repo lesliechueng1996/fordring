@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from 'src/entities/user.entity';
 import { ARTICLE_IMAGE_PREFIX } from 'src/constants/fordring.const';
 import { DataSource, Repository } from 'typeorm';
@@ -14,6 +19,7 @@ import { Tag } from 'src/entities/tag.entity';
 import { BaseEntity } from 'src/entities/base.entity';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
 import { ARTICLE_ERROR } from 'src/constants/error.const';
+import { GetArticleResDto } from './dto/get-article.dto';
 
 @Injectable()
 export class ArticleService {
@@ -126,7 +132,42 @@ export class ArticleService {
     return this.articleRepository.findOneBy({ id });
   }
 
-  async saveArticle(body: SaveArticleDtoReq, user: User) {
+  async getArticleWithTagsById(id: string): Promise<GetArticleResDto> {
+    const article = await this.articleRepository.findOneBy({ id });
+    if (!article) {
+      throw new NotFoundException(
+        ApiJsonResult.error(
+          ARTICLE_ERROR.ARTICLE_NOT_FOUND,
+          'Article not found'
+        )
+      );
+    }
+
+    const tags = await this.articleTagRepository.findBy({
+      articleId: id,
+    });
+
+    return {
+      id: article.id,
+      title: article.title,
+      author: article.author,
+      content: article.content,
+      status: article.status,
+      categoryId: article.categoryId,
+      previewUrl: article.previewUrl,
+      isTop: article.isTop,
+      isFire: article.isFire,
+      isDraft: article.isDraft,
+      version: article.version,
+      tags: tags.map((item) => item.tagId),
+    };
+  }
+
+  async saveArticle(
+    body: SaveArticleDtoReq,
+    user: User,
+    draftArticleId?: string
+  ) {
     const { nickName } = user;
     const {
       title,
@@ -145,6 +186,9 @@ export class ArticleService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      if (draftArticleId) {
+        this.deleteArticleById(draftArticleId);
+      }
       const article = await queryRunner.manager.save(Article, {
         title,
         author: nickName,
