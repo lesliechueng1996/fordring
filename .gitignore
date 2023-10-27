@@ -46,3 +46,6 @@ logs
 
 # ENV
 .env.local
+
+# Next.js
+.next
