@@ -1,5 +1,16 @@
 import qs from 'qs';
 import { sendRequest } from './http-request';
+import {
+  PageArticleReq,
+  PageArticleItem,
+  PageArticleRes,
+} from '@fordring/api-type';
+
+export {
+  GetArticleRes,
+  PageArticleReq,
+  PageArticleItem,
+} from '@fordring/api-type';
 
 export async function saveDraftArticle(title: string, content: string) {
   try {
@@ -67,44 +78,7 @@ export async function draftToArticle(
   }
 }
 
-export type PageArticleReq = {
-  title: string | undefined;
-  status: number | undefined;
-  categoryId: number | undefined;
-  tagId: number | undefined;
-  isTop: boolean | undefined;
-  isFire: boolean | undefined;
-  isDraft: boolean | undefined;
-  currentPage: number;
-  pageSize: number;
-  sortField: string | undefined | null;
-  sortOrder: 'ASC' | 'DESC' | '' | undefined | null;
-};
-
-export type PageArticleItem = {
-  id: string;
-  title: string;
-  author: string;
-  status: number;
-  categoryName: string;
-  viewCount: number;
-  previewUrl: string | null;
-  isTop: boolean;
-  isFire: boolean;
-  isDraft: boolean;
-  version: number;
-  updateTime: number;
-  tags: {
-    id: number;
-    tagName: string;
-    color: string;
-  }[];
-};
-
-export type PageArticleData = {
-  total: number;
-  list: PageArticleItem[];
-};
+export type PageArticleData = PageArticleRes;
 
 export async function getArticlesByPage(query: PageArticleReq) {
   try {
@@ -176,21 +150,6 @@ export async function updateArticleStatus(
     return e as ApiJsonResult<null>;
   }
 }
-
-export type GetArticleRes = {
-  id: string;
-  title: string;
-  author: string;
-  content: string;
-  status: number;
-  categoryId: number | null;
-  previewUrl: string | null;
-  isTop: boolean;
-  isFire: boolean;
-  isDraft: boolean;
-  version: number;
-  tags: number[];
-};
 
 export async function getArticle(id: string) {
   try {

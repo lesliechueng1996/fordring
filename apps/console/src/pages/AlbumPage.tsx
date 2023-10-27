@@ -12,7 +12,13 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useNavigate } from 'react-router-dom';
 
 function AlbumPage() {
-  const { showSidebar, showCreateSidebar, showEditSidebar, hideCreateSidebar, hideEditSidebar } = useSidebarAction();
+  const {
+    showSidebar,
+    showCreateSidebar,
+    showEditSidebar,
+    hideCreateSidebar,
+    hideEditSidebar,
+  } = useSidebarAction();
 
   const contextMenuRef = useRef<ContextMenu>(null);
   const { albums, search, deleteAlbum } = useAlbum();
@@ -29,7 +35,7 @@ function AlbumPage() {
       header: '确认',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        deleteAlbum(onContextId.current!);
+        deleteAlbum(onContextId.current as number);
       },
     });
   };
@@ -59,9 +65,11 @@ function AlbumPage() {
     hideEditSidebar();
   };
 
-  const handleContextMenuClick: (id: number) => MouseEventHandler<HTMLDivElement> = (id: number) => (e) => {
+  const handleContextMenuClick: (
+    id: number
+  ) => MouseEventHandler<HTMLDivElement> = (id: number) => (e) => {
     onContextId.current = id;
-    contextMenuRef.current!.show(e);
+    contextMenuRef.current?.show(e);
   };
 
   const handleAlbumClick = (id: number) => () => {
@@ -89,7 +97,10 @@ function AlbumPage() {
       </Sidebar>
 
       <Sidebar visible={showSidebar.edit} onHide={hideEditSidebar}>
-        <EditAlbum id={onContextId.current!} onEditSuccess={handleEditAlbumSuccess} />
+        <EditAlbum
+          id={onContextId.current as number}
+          onEditSuccess={handleEditAlbumSuccess}
+        />
       </Sidebar>
 
       <ConfirmDialog />

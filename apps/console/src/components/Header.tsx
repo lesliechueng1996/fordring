@@ -35,7 +35,7 @@ function Header() {
             className="cursor-pointer"
             size="large"
             shape="circle"
-            onClick={(e) => userMenu.current!.toggle(e)}
+            onClick={(e) => userMenu.current?.toggle(e)}
           />
         ) : (
           <Avatar
@@ -43,7 +43,7 @@ function Header() {
             size="large"
             shape="circle"
             className="cursor-pointer"
-            onClick={(e) => userMenu.current!.toggle(e)}
+            onClick={(e) => userMenu.current?.toggle(e)}
             style={{ backgroundColor: '#4caf4f', color: '#ffffff' }}
           />
         )}

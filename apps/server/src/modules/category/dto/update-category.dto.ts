@@ -1,7 +1,8 @@
+import { UpdateCategoryReq } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, MaxLength, Min } from 'class-validator';
 
-export class UpdateCategoryReqDto {
+export class UpdateCategoryReqDto implements UpdateCategoryReq {
   @ApiProperty({
     description: '分类名称',
     example: '分类1',

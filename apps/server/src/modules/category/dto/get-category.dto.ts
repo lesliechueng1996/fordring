@@ -1,7 +1,8 @@
+import { GetCategoryRes } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 import { Category } from 'src/entities/category.entity';
 
-export class GetCategoryResDto {
+export class GetCategoryResDto implements GetCategoryRes {
   @ApiProperty({
     description: '分类id',
     example: 1,

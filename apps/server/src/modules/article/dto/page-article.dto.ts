@@ -1,3 +1,8 @@
+import {
+  PageArticleItem,
+  PageArticleReq,
+  PageArticleRes,
+} from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsNumber, ValidateIf } from 'class-validator';
 import { PaginationReqDto } from 'src/dto/pagination-req.dto';
@@ -5,7 +10,10 @@ import { ArticleStatus } from 'src/entities/article.entity';
 import { BaseEntity } from 'src/entities/base.entity';
 import { Tag } from 'src/entities/tag.entity';
 
-export class PageArticleDtoReq extends PaginationReqDto {
+export class PageArticleDtoReq
+  extends PaginationReqDto
+  implements PageArticleReq
+{
   @ApiProperty({ description: '文章标题', required: false })
   title: string | null | undefined;
 
@@ -44,7 +52,7 @@ export class PageArticleDtoReq extends PaginationReqDto {
   isDraft: boolean | undefined;
 }
 
-export class PageArticleResItem {
+export class PageArticleResItem implements PageArticleItem {
   @ApiProperty({ description: '文章id' })
   id: string;
 
@@ -85,7 +93,7 @@ export class PageArticleResItem {
   tags: Omit<Tag, keyof BaseEntity>[];
 }
 
-export class PageArticleDtoRes {
+export class PageArticleDtoRes implements PageArticleRes {
   @ApiProperty({ description: '总数' })
   total: number;
   @ApiProperty({ description: '文章列表' })

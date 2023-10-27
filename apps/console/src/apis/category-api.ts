@@ -1,3 +1,4 @@
+import { PageCategoryRes, PageCategoryItem } from '@fordring/api-type';
 import { sendRequest } from './http-request';
 import qs from 'qs';
 
@@ -36,17 +37,9 @@ export async function createCategory(
   }
 }
 
-export type CategoryPageItem = {
-  id: number;
-  categoryName: string;
-  createTime: number;
-  version: number;
-};
+export type CategoryPageItem = PageCategoryItem;
 
-export type CategoryPageData = {
-  total: number;
-  list: Array<CategoryPageItem>;
-};
+export type CategoryPageData = PageCategoryRes;
 
 export async function searchCategoryByPage(
   categoryName: string,

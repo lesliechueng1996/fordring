@@ -1,6 +1,7 @@
+import { GetArticleRes } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class GetArticleResDto {
+export class GetArticleResDto implements GetArticleRes {
   @ApiProperty({ description: '文章id' })
   id: string;
 

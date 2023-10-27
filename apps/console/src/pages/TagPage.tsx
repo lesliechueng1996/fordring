@@ -18,7 +18,10 @@ import useMount from '../hooks/useMount';
 const ColorColumnBody = (rowData: TagPageItem) => {
   return (
     <span>
-      <div className="w-6 h-6 rounded-full" style={{ backgroundColor: `#${rowData.color}` }} />
+      <div
+        className="w-6 h-6 rounded-full"
+        style={{ backgroundColor: `#${rowData.color}` }}
+      />
     </span>
   );
 };
@@ -40,13 +43,21 @@ function TagPage() {
   } = useTag();
   const showConfirm = useConfirmPopup();
 
-  const { showSidebar, showCreateSidebar, showEditSidebar, hideCreateSidebar, hideEditSidebar } = useSidebarAction();
+  const {
+    showSidebar,
+    showCreateSidebar,
+    showEditSidebar,
+    hideCreateSidebar,
+    hideEditSidebar,
+  } = useSidebarAction();
 
   const editIdRef = useRef<number | null>(null);
 
   useMount(() => search());
 
-  const confirmDelete: (rowData: TagPageItem) => MouseEventHandler<HTMLButtonElement> =
+  const confirmDelete: (
+    rowData: TagPageItem
+  ) => MouseEventHandler<HTMLButtonElement> =
     (rowData: TagPageItem) => (event) => {
       showConfirm(event.currentTarget, () => {
         deleteTag(rowData.id);
@@ -61,8 +72,16 @@ function TagPage() {
   const actionBodyTemplate = (rowData: TagPageItem) => {
     return (
       <div className="space-x-3">
-        <Button label="编辑" severity="help" onClick={handleEditClick(rowData.id)} />
-        <Button label="删除" severity="danger" onClick={confirmDelete(rowData)} />
+        <Button
+          label="编辑"
+          severity="help"
+          onClick={handleEditClick(rowData.id)}
+        />
+        <Button
+          label="删除"
+          severity="danger"
+          onClick={confirmDelete(rowData)}
+        />
       </div>
     );
   };
@@ -77,16 +96,36 @@ function TagPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-5">
           <span className="p-float-label">
-            <InputText id="tagName" name="tagName" value={tagName} onChange={(e) => setTagName(e.target.value)} />
+            <InputText
+              id="tagName"
+              name="tagName"
+              value={tagName}
+              onChange={(e) => setTagName(e.target.value)}
+            />
             <label htmlFor="tagName">标签名</label>
           </span>
 
-          <Button label="搜索" icon="pi pi-search" loading={isLoading} onClick={() => search()} />
-          <Button label="清除" icon="pi pi-filter-slash" severity="warning" onClick={clear} />
+          <Button
+            label="搜索"
+            icon="pi pi-search"
+            loading={isLoading}
+            onClick={() => search()}
+          />
+          <Button
+            label="清除"
+            icon="pi pi-filter-slash"
+            severity="warning"
+            onClick={clear}
+          />
         </div>
 
         <div>
-          <Button label="新增" icon="pi pi-plus" severity="success" onClick={showCreateSidebar} />
+          <Button
+            label="新增"
+            icon="pi pi-plus"
+            severity="success"
+            onClick={showCreateSidebar}
+          />
         </div>
       </div>
       <div>
@@ -109,9 +148,20 @@ function TagPage() {
           currentPageReportTemplate="{first} 至 {last} 总计 {totalRecords}"
           emptyMessage="暂无数据"
         >
-          <Column field="tagName" header="标签名" sortable sortField="tag_name" />
+          <Column
+            field="tagName"
+            header="标签名"
+            sortable
+            sortField="tag_name"
+          />
           <Column field="color" header="标签颜色" body={ColorColumnBody} />
-          <Column field="createTime" header="创建时间" sortable sortField="create_time" body={CreateTimeColumnBody} />
+          <Column
+            field="createTime"
+            header="创建时间"
+            sortable
+            sortField="create_time"
+            body={CreateTimeColumnBody}
+          />
           <Column header="操作" body={actionBodyTemplate} />
         </DataTable>
       </div>
@@ -125,9 +175,12 @@ function TagPage() {
         />
       </Sidebar>
 
-      <Sidebar visible={showSidebar.edit && editIdRef.current !== null} onHide={handleHideEditSidebar}>
+      <Sidebar
+        visible={showSidebar.edit && editIdRef.current !== null}
+        onHide={handleHideEditSidebar}
+      >
         <EditTag
-          id={editIdRef.current!}
+          id={editIdRef.current as number}
           onSuccess={() => {
             handleHideEditSidebar();
             search();

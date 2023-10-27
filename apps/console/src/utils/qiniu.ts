@@ -5,7 +5,10 @@ import { UploadProgress } from 'qiniu-js/esm/upload';
 
 type UploadCompleteData = { hash: string; key: string };
 
-export const uploadFile = async (file: File, onNext?: (progress: UploadProgress) => void) => {
+export const uploadFile = async (
+  file: File,
+  onNext?: (progress: UploadProgress) => void
+) => {
   return new Promise((resolve: (data: UploadCompleteData) => void, reject) => {
     getSimpleUploadToken().then((res) => {
       if (res.code !== API_OK) {
@@ -36,15 +39,17 @@ export const uploadFile = async (file: File, onNext?: (progress: UploadProgress)
   });
 };
 
-export const compressImage = async (file: File, quality: number = 0.2) => {
+export const compressImage = async (file: File, quality = 0.2) => {
   return new Promise((resolve: (data: File) => void, reject) => {
-    qiniu.compressImage(file, { noCompressIfLarger: true, quality }).then((res) => {
-      const { dist } = res;
-      if (dist instanceof Blob) {
-        resolve(new File([dist], file.name, { type: file.type }));
-      } else {
-        resolve(dist);
-      }
-    }, reject);
+    qiniu
+      .compressImage(file, { noCompressIfLarger: true, quality })
+      .then((res) => {
+        const { dist } = res;
+        if (dist instanceof Blob) {
+          resolve(new File([dist], file.name, { type: file.type }));
+        } else {
+          resolve(dist);
+        }
+      }, reject);
   });
 };
