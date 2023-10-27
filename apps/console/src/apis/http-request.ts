@@ -1,8 +1,6 @@
+import type { GenerateTokenRes } from '@fordring/api-type';
 import { isTokenWillExpired } from '../utils/jwt';
-import {
-  GenerateTokenRes,
-  refreshToken as invokeRefreshToken,
-} from './auth-api';
+import { refreshToken as invokeRefreshToken } from './auth-api';
 
 export const BASE_URL = 'http://localhost:3000/api';
 

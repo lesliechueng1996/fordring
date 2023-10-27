@@ -1,5 +1,6 @@
 import qs from 'qs';
 import { sendRequest } from './http-request';
+import { PageTagItem, PageTagRes } from '@fordring/api-type';
 
 export const TAG_ALREADY_EXIST = 50001;
 export const CREATE_TAG_FAILED = 50002;
@@ -32,18 +33,9 @@ export async function createTag(tagName: string, color: string) {
   }
 }
 
-export type TagPageItem = {
-  id: number;
-  tagName: string;
-  color: string;
-  createTime: number;
-  version: number;
-};
+export type TagPageItem = PageTagItem;
 
-export type TagPageData = {
-  total: number;
-  list: Array<TagPageItem>;
-};
+export type TagPageData = PageTagRes;
 
 export async function searchTagByPage(
   tagName: string,

@@ -25,15 +25,17 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     this.logger.error(exception);
 
     if (exception instanceof HttpException) {
-      httpAdapter.reply(
-        response,
-        exception.getResponse(),
-        exception.getStatus(),
-      );
+      const obj = exception.getResponse();
+      const status = exception.getStatus();
+      if (obj instanceof ApiJsonResult) {
+        obj.status = status;
+      }
+      httpAdapter.reply(response, obj, exception.getStatus());
       return;
     }
 
     if (exception instanceof ApiJsonResult) {
+      exception.status = exception.status || HttpStatus.INTERNAL_SERVER_ERROR;
       httpAdapter.reply(response, exception, HttpStatus.INTERNAL_SERVER_ERROR);
       return;
     }
@@ -41,7 +43,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     httpAdapter.reply(
       response,
       ApiJsonResult.error(INTERNAL_SERVER_ERROR, '系统异常'),
-      HttpStatus.INTERNAL_SERVER_ERROR,
+      HttpStatus.INTERNAL_SERVER_ERROR
     );
   }
 }

@@ -27,9 +27,9 @@ import {
   ApiJsonResultResponse,
 } from 'src/dto/api-json-result.dto';
 import { ALBUM_ERROR } from 'src/constants/error.const';
-import { CreateALbumResDto, CreateAlbumReqDto } from './dto/create-album.dto';
+import { CreateAlbumResDto, CreateAlbumReqDto } from './dto/create-album.dto';
 import { AllAlbumsResDto } from './dto/all-albums.dto';
-import { GetAlbumsResDto } from './dto/get-album.dto';
+import { GetAlbumResDto } from './dto/get-album.dto';
 import { UpdateAlbumDtoReq } from './dto/update-album.dto';
 import { PictureService } from '../picture/picture.service';
 import { ConfigService } from '@nestjs/config';
@@ -57,7 +57,7 @@ export class AlbumController {
   @ApiConflictResponse({
     description: `code - ${ALBUM_ERROR.ALBUM_DISPLAY_NAME_ALREADY_EXIST}: 图册名称已存在, code - ${ALBUM_ERROR.ALBUM_FOLDER_NAME_ALREADY_EXIST}: 图册文件夹名称已存在}`,
   })
-  @ApiJsonResultResponse(CreateALbumResDto)
+  @ApiJsonResultResponse(CreateAlbumResDto)
   async createAlbum(@Body() body: CreateAlbumReqDto) {
     const album = await this.albumService.createAlbum(body);
     return {
@@ -94,7 +94,7 @@ export class AlbumController {
   @ApiNotFoundResponse({
     description: '该图册不存在',
   })
-  @ApiJsonResultResponse(GetAlbumsResDto)
+  @ApiJsonResultResponse(GetAlbumResDto)
   async getAlbum(@Param('id') id: number) {
     const album = await this.albumService.getAlbumById(id);
     return album;

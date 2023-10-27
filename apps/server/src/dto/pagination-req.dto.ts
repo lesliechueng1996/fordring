@@ -1,7 +1,8 @@
+import { PaginationReq, SortOrder } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumber, Max, Min, ValidateIf } from 'class-validator';
 
-export class PaginationReqDto {
+export class PaginationReqDto implements PaginationReq {
   @ApiProperty({
     description: '当前页',
     required: true,
@@ -33,9 +34,9 @@ export class PaginationReqDto {
   @ApiProperty({
     description: '排序方式',
     required: false,
-    enum: ['ASC', 'DESC'],
+    enum: SortOrder,
   })
-  @IsEnum(['ASC', 'DESC'])
+  @IsEnum(SortOrder)
   @ValidateIf((o) => !o)
-  sortOrder: 'ASC' | 'DESC' | '' | undefined | null;
+  sortOrder: SortOrder | '' | undefined | null;
 }

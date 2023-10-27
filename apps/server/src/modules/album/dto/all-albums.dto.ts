@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { GetAlbumsResDto } from './get-album.dto';
+import { GetAlbumResDto } from './get-album.dto';
+import { AllAlbumsRes } from '@fordring/api-type';
 
-export class AllAlbumsResDto {
-  @ApiProperty({ type: [GetAlbumsResDto], description: '所有图册' })
-  list: GetAlbumsResDto[];
+export class AllAlbumsResDto implements AllAlbumsRes {
+  @ApiProperty({ type: [GetAlbumResDto], description: '所有图册' })
+  list: GetAlbumResDto[];
 }

@@ -1,13 +1,14 @@
+import { PageTagItem, PageTagReq, PageTagRes } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginationReqDto } from 'src/dto/pagination-req.dto';
 import { Tag } from 'src/entities/tag.entity';
 
-export class PageTagReqDto extends PaginationReqDto {
+export class PageTagReqDto extends PaginationReqDto implements PageTagReq {
   @ApiProperty({ description: '标签名称', required: false })
   tagName: string | null | undefined;
 }
 
-export class PageTagResItem {
+export class PageTagResItem implements PageTagItem {
   @ApiProperty({ description: '标签ID' })
   id: number;
 
@@ -32,7 +33,7 @@ export class PageTagResItem {
   }
 }
 
-export class PageTagResDto {
+export class PageTagResDto implements PageTagRes {
   @ApiProperty({ description: '总数' })
   total: number;
 

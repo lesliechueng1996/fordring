@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
@@ -14,8 +15,13 @@ export class TransformInterceptor<T>
 {
   intercept(
     context: ExecutionContext,
-    next: CallHandler,
+    next: CallHandler
   ): Observable<ApiJsonResult<T>> {
-    return next.handle().pipe(map((data) => ApiJsonResult.success(data)));
+    const statusCode = context
+      .switchToHttp()
+      .getResponse<Response>().statusCode;
+    return next
+      .handle()
+      .pipe(map((data) => ApiJsonResult.success(data, statusCode)));
   }
 }

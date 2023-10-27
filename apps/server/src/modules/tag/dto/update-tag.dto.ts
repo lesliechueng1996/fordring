@@ -1,7 +1,8 @@
+import { UpdateTagReq } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsHexColor, IsNotEmpty, IsNumber, MaxLength } from 'class-validator';
 
-export class UpdateTagReqDto {
+export class UpdateTagReqDto implements UpdateTagReq {
   @ApiProperty({ description: '标签名称', maxLength: 32 })
   @IsNotEmpty()
   @MaxLength(32)

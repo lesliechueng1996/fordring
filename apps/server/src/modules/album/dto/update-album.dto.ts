@@ -1,3 +1,4 @@
+import { UpdateAlbumReq } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNotEmpty,
@@ -7,7 +8,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 
-export class UpdateAlbumDtoReq {
+export class UpdateAlbumDtoReq implements UpdateAlbumReq {
   @ApiProperty({
     description: '图册名称',
     example: '图册名称',

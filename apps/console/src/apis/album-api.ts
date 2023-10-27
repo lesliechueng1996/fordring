@@ -1,3 +1,8 @@
+import {
+  AllPictureItem,
+  AllPicturesRes,
+  GetAlbumRes,
+} from '@fordring/api-type';
 import { sendRequest } from './http-request';
 
 export const ALBUM_DISPLAY_NAME_ALREADY_EXIST = 30001;
@@ -24,18 +29,16 @@ export const getErrorMessage = (code: number) => {
   return ERROR_MESSAGE_MAP[code] || '未知错误';
 };
 
-export type Album = {
-  id: number;
-  displayName: string;
-  folderName: string;
-  description: string | null;
-  previewUrl: string | null;
-  version: number;
-};
+export type Album = Omit<GetAlbumRes, 'pictureCount'>;
 
-export type AlbumWithPictureCount = Album & { pictureCount: number };
+export type AlbumWithPictureCount = GetAlbumRes;
 
-export const createAlbum = async (displayName: string, folderName: string, previewUrl: string, description: string) => {
+export const createAlbum = async (
+  displayName: string,
+  folderName: string,
+  previewUrl: string,
+  description: string
+) => {
   try {
     const data = await sendRequest('/album', {
       method: 'POST',
@@ -106,18 +109,9 @@ export const deleteAlbumById = async (id: number) => {
   }
 };
 
-export type AlbumPictureResItem = {
-  id: number;
-  name: string;
-  url: string;
-  description: string;
-  createTime: number;
-  version: number;
-};
+export type AlbumPictureResItem = AllPictureItem;
 
-export type AlbumPictureRes = {
-  pictures: AlbumPictureResItem[];
-};
+export type AlbumPictureRes = AllPicturesRes;
 
 export const getAlbumPictures = async (id: number) => {
   try {

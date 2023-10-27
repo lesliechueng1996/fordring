@@ -14,7 +14,7 @@ import { AUTHENTICATION, USER_ID_KEY } from 'src/constants/fordring.const';
 export class LoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger(LoggingInterceptor.name);
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const className = context.getClass().name;
     const methodName = context.getHandler().name;
     const request = context.switchToHttp().getRequest<Request>();
@@ -57,7 +57,7 @@ export class LoggingInterceptor implements NestInterceptor {
 ======================================================
           `);
         },
-      }),
+      })
     );
   }
 }

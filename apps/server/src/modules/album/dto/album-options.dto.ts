@@ -1,6 +1,7 @@
+import { DropdownItem } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class AlbumOptionsResDto {
+export class AlbumOptionsResDto implements DropdownItem {
   @ApiProperty({
     description: '图册名称',
   })

@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsHexColor, IsNotEmpty, MaxLength } from 'class-validator';
+import { CreateTagReq } from '@fordring/api-type';
 
-export class CreateTagDtoReq {
+export class CreateTagDtoReq implements CreateTagReq {
   @ApiProperty({
     description: '标签名',
     example: '前端',

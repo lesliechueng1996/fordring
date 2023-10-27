@@ -1,6 +1,7 @@
+import { AllPictureItem, AllPicturesRes } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class AllPicturesDtoItem {
+export class AllPicturesDtoItem implements AllPictureItem {
   @ApiProperty({ description: '图片id' })
   id: number;
 
@@ -20,7 +21,7 @@ export class AllPicturesDtoItem {
   version: number;
 }
 
-export class AllPicturesResDto {
+export class AllPicturesResDto implements AllPicturesRes {
   @ApiProperty({ description: '图片列表', type: [AllPicturesDtoItem] })
   pictures: Array<AllPicturesDtoItem>;
 }

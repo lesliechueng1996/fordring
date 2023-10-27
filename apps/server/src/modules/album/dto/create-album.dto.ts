@@ -1,7 +1,8 @@
+import { CreateAlbumReq, CreateAlbumRes } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MaxLength, ValidateIf } from 'class-validator';
 
-export class CreateAlbumReqDto {
+export class CreateAlbumReqDto implements CreateAlbumReq {
   @ApiProperty({
     description: '图册名称',
     example: '图册名称',
@@ -39,7 +40,7 @@ export class CreateAlbumReqDto {
   previewUrl: string;
 }
 
-export class CreateALbumResDto {
+export class CreateAlbumResDto implements CreateAlbumRes {
   @ApiProperty({
     description: '图册id',
     example: 1,

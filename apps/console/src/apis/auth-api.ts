@@ -1,3 +1,4 @@
+import { GenerateTokenRes } from '@fordring/api-type';
 import { BASE_URL, INTERNAL_ERROR } from './http-request';
 
 const USER_NOT_FOUND = 10001;
@@ -19,12 +20,10 @@ export function getErrorMsg(code: number) {
   return msg || '未知错误';
 }
 
-export type GenerateTokenRes = {
-  accessToken: string;
-  refreshToken: string;
-};
-
-export async function retrieveToken(email: string, password: string): Promise<ApiJsonResult<unknown>> {
+export async function retrieveToken(
+  email: string,
+  password: string
+): Promise<ApiJsonResult<unknown>> {
   try {
     const res = await fetch(`${BASE_URL}/auth/token`, {
       method: 'POST',
@@ -62,7 +61,9 @@ export async function refreshToken(refreshToken: string) {
     if (res.ok) {
       return data as GenerateTokenRes;
     }
-    console.error(`Refresh token failed, status: ${res.status}, [${code}] ${message}`);
+    console.error(
+      `Refresh token failed, status: ${res.status}, [${code}] ${message}`
+    );
     return null;
   } catch (e) {
     console.error(e);

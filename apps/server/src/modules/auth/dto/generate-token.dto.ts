@@ -1,7 +1,8 @@
+import { GenerateTokenReq, GenerateTokenRes } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
 
-export class GenerateTokenReqDto {
+export class GenerateTokenReqDto implements GenerateTokenReq {
   @ApiProperty({
     description: '邮箱',
     example: 'xxx@qq.com',
@@ -21,7 +22,7 @@ export class GenerateTokenReqDto {
   password: string;
 }
 
-export class GenerateTokenResDto {
+export class GenerateTokenResDto implements GenerateTokenRes {
   @ApiProperty({ description: '访问令牌' })
   accessToken: string;
 
