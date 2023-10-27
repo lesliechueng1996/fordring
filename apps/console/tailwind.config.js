@@ -1,3 +1,5 @@
+/** @type {import('tailwindcss').Config} */
+
 const { createGlobPatternsForDependencies } = require('@nx/react/tailwind');
 const { join } = require('path');
 
