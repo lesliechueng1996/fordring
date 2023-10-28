@@ -1,6 +1,6 @@
 import { GetCategoryRes } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
-import { Category } from 'src/entities/category.entity';
+import { Category } from 'src/entities';
 
 export class GetCategoryResDto implements GetCategoryRes {
   @ApiProperty({

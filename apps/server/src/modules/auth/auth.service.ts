@@ -2,7 +2,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
-import { User } from 'src/entities/user.entity';
+import { User } from 'src/entities';
 import { APP_NAME } from 'src/constants/fordring.const';
 
 const REFRESH_TOKEN_PREFIX = `${APP_NAME}:refresh-token:`;

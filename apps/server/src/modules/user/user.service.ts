@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User, UserStatus } from 'src/entities/user.entity';
+import { User, UserStatus } from 'src/entities';
 import { Repository } from 'typeorm';
 import { encryptPassword, validatePassword } from 'src/utils/password.util';
 import { AUTH_ERROR } from 'src/constants/error.const';

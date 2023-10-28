@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { ALBUM_ERROR } from 'src/constants/error.const';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
-import { Album } from 'src/entities/album.entity';
+import { Album } from 'src/entities';
 import { Not, Repository, UpdateResult } from 'typeorm';
 import { CreateAlbumReqDto } from './dto/create-album.dto';
 import { GetAlbumResDto } from './dto/get-album.dto';
@@ -23,7 +23,7 @@ export class AlbumService {
   constructor(
     @InjectRepository(Album)
     private albumRepository: Repository<Album>,
-    private pictureService: PictureService
+    private pictureService: PictureService,
   ) {}
 
   async countByDisplayName(displayName: string, excludeId?: number) {
@@ -53,7 +53,7 @@ export class AlbumService {
   async isDisplayNameOrFolderNameExist(
     displayName: string,
     folderName: string,
-    excludeId?: number
+    excludeId?: number,
   ) {
     const promise = Promise.all([
       this.countByDisplayName(displayName, excludeId),
@@ -67,8 +67,8 @@ export class AlbumService {
       throw new ConflictException(
         ApiJsonResult.error(
           ALBUM_ERROR.ALBUM_DISPLAY_NAME_ALREADY_EXIST,
-          'Album display name already exist'
-        )
+          'Album display name already exist',
+        ),
       );
     }
 
@@ -77,8 +77,8 @@ export class AlbumService {
       throw new ConflictException(
         ApiJsonResult.error(
           ALBUM_ERROR.ALBUM_FOLDER_NAME_ALREADY_EXIST,
-          'Album folder name already exist'
-        )
+          'Album folder name already exist',
+        ),
       );
     }
   }
@@ -99,7 +99,7 @@ export class AlbumService {
       this.logger.error(e);
       throw ApiJsonResult.error(
         ALBUM_ERROR.ALBUM_CREATE_FAILED,
-        'Create album failed'
+        'Create album failed',
       );
     }
   }
@@ -131,7 +131,7 @@ export class AlbumService {
     if (!album) {
       this.logger.error(`album id: ${id} not found`);
       throw new NotFoundException(
-        ApiJsonResult.error(ALBUM_ERROR.ALBUM_NOT_FOUND, 'Album not found')
+        ApiJsonResult.error(ALBUM_ERROR.ALBUM_NOT_FOUND, 'Album not found'),
       );
     }
     return new GetAlbumResDto(album, pictureCount);
@@ -153,25 +153,25 @@ export class AlbumService {
           folderName,
           description,
           previewUrl,
-        }
+        },
       );
     } catch (e) {
       this.logger.error(e);
       throw ApiJsonResult.error(
         ALBUM_ERROR.UPDATE_ALBUM_FAILED,
-        'Update album failed'
+        'Update album failed',
       );
     }
 
     if (result.affected === 0) {
       this.logger.error(
-        `album ${id} not found or version ${version} not match`
+        `album ${id} not found or version ${version} not match`,
       );
       throw new ConflictException(
         ApiJsonResult.error(
           ALBUM_ERROR.ALBUM_VERSION_CONFLICT,
-          'Album not found or version not match'
-        )
+          'Album not found or version not match',
+        ),
       );
     }
   }
@@ -181,7 +181,7 @@ export class AlbumService {
     if (pictureCount > 0) {
       this.logger.error(`album id: ${id} has picture`);
       throw new ConflictException(
-        ApiJsonResult.error(ALBUM_ERROR.ALBUM_HAS_PICTURE, 'Album has picture')
+        ApiJsonResult.error(ALBUM_ERROR.ALBUM_HAS_PICTURE, 'Album has picture'),
       );
     }
     await this.albumRepository.delete({ id });

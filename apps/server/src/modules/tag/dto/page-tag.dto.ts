@@ -1,7 +1,7 @@
 import { PageTagItem, PageTagReq, PageTagRes } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginationReqDto } from 'src/dto/pagination-req.dto';
-import { Tag } from 'src/entities/tag.entity';
+import { Tag } from 'src/entities';
 
 export class PageTagReqDto extends PaginationReqDto implements PageTagReq {
   @ApiProperty({ description: '标签名称', required: false })

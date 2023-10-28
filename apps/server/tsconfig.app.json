@@ -8,7 +8,8 @@
     "target": "es2021",
     "paths": {
       "src/*": ["apps/server/src/*"],
-      "@fordring/api-type": ["libs/api-type/src/index.ts"]
+      "@fordring/api-type": ["libs/api-type/src/index.ts"],
+      "@fordring/db-entity": ["libs/db-entity/src/index.ts"]
     }
   },
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],

@@ -7,7 +7,7 @@ import {
   MaxLength,
   ValidateIf,
 } from 'class-validator';
-import { ArticleStatus } from 'src/entities/article.entity';
+import { ArticleStatus } from 'src/entities';
 
 export class SaveArticleDtoReq {
   @ApiProperty({ description: '文章标题' })

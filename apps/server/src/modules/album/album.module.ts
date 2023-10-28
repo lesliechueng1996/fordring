@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { AlbumController } from './album.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Album } from 'src/entities/album.entity';
+import { Album } from 'src/entities';
 import { PictureModule } from '../picture/picture.module';
 
 @Module({

@@ -6,9 +6,9 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsNumber, ValidateIf } from 'class-validator';
 import { PaginationReqDto } from 'src/dto/pagination-req.dto';
-import { ArticleStatus } from 'src/entities/article.entity';
-import { BaseEntity } from 'src/entities/base.entity';
-import { Tag } from 'src/entities/tag.entity';
+import { ArticleStatus } from 'src/entities';
+import { BaseEntity } from 'src/entities';
+import { Tag } from 'src/entities';
 
 export class PageArticleDtoReq
   extends PaginationReqDto

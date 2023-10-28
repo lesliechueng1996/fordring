@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Picture } from 'src/entities/picture.entity';
+import { Picture } from 'src/entities';
 import { Repository } from 'typeorm';
 import { CreatePictureReqDto } from './dto/create-picture.dto';
 import { QiniuService } from 'src/providers/QiniuService';

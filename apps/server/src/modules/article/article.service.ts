@@ -4,19 +4,19 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { User } from 'src/entities/user.entity';
+import { User } from 'src/entities';
 import { ARTICLE_IMAGE_PREFIX } from 'src/constants/fordring.const';
 import { DataSource, Repository } from 'typeorm';
-import { Article, ArticleStatus } from 'src/entities/article.entity';
-import { ArticlePicture } from 'src/entities/article-picture.entity';
+import { Article, ArticleStatus } from 'src/entities';
+import { ArticlePicture } from 'src/entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SaveArticleDtoReq } from './dto/save-article.dto';
-import { ArticleTag } from 'src/entities/article-tag.entity';
+import { ArticleTag } from 'src/entities';
 import { PageArticleDtoReq, PageArticleResItem } from './dto/page-article.dto';
-import { Category } from 'src/entities/category.entity';
+import { Category } from 'src/entities';
 import { withPageAndOrderQuery } from 'src/utils/query-builder.util';
-import { Tag } from 'src/entities/tag.entity';
-import { BaseEntity } from 'src/entities/base.entity';
+import { Tag } from 'src/entities';
+import { BaseEntity } from 'src/entities';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
 import { ARTICLE_ERROR } from 'src/constants/error.const';
 import { GetArticleResDto } from './dto/get-article.dto';
@@ -30,7 +30,7 @@ export class ArticleService {
     private dataSource: DataSource,
     @InjectRepository(Article) private articleRepository: Repository<Article>,
     @InjectRepository(ArticleTag)
-    private articleTagRepository: Repository<ArticleTag>
+    private articleTagRepository: Repository<ArticleTag>,
   ) {}
 
   async saveDraftArticle(title: string, content: string, user: User) {
@@ -65,7 +65,7 @@ export class ArticleService {
       if (articlePictures.length > 0) {
         await queryRunner.manager.save(ArticlePicture, articlePictures);
         this.logger.log(
-          `save draft article ${article.id} pictures, size: ${articlePictures.length}`
+          `save draft article ${article.id} pictures, size: ${articlePictures.length}`,
         );
       }
       await queryRunner.commitTransaction();
@@ -98,7 +98,7 @@ export class ArticleService {
           content,
           status: ArticleStatus.HIDDEN,
           isDraft: true,
-        }
+        },
       );
       this.logger.log(`update draft article ${id}`);
 
@@ -115,7 +115,7 @@ export class ArticleService {
       if (articlePictures.length > 0) {
         await queryRunner.manager.save(ArticlePicture, articlePictures);
         this.logger.log(
-          `save draft article ${id} pictures, size: ${articlePictures.length}`
+          `save draft article ${id} pictures, size: ${articlePictures.length}`,
         );
       }
 
@@ -139,8 +139,8 @@ export class ArticleService {
       throw new NotFoundException(
         ApiJsonResult.error(
           ARTICLE_ERROR.ARTICLE_NOT_FOUND,
-          'Article not found'
-        )
+          'Article not found',
+        ),
       );
     }
 
@@ -167,7 +167,7 @@ export class ArticleService {
   async saveArticle(
     body: SaveArticleDtoReq,
     user: User,
-    draftArticleId?: string
+    draftArticleId?: string,
   ) {
     const { nickName } = user;
     const {
@@ -218,7 +218,7 @@ export class ArticleService {
       if (articlePictures.length > 0) {
         await queryRunner.manager.save(ArticlePicture, articlePictures);
         this.logger.log(
-          `save article ${article.id} pictures, size: ${articlePictures.length}`
+          `save article ${article.id} pictures, size: ${articlePictures.length}`,
         );
       }
 
@@ -228,10 +228,10 @@ export class ArticleService {
           tagIds.map((tagId) => ({
             articleId: article.id,
             tagId,
-          }))
+          })),
         );
         this.logger.log(
-          `save article ${article.id} tags, size: ${tagIds.length}`
+          `save article ${article.id} tags, size: ${tagIds.length}`,
         );
       }
 
@@ -295,7 +295,7 @@ export class ArticleService {
         'article.category_id = :categoryId',
         {
           categoryId,
-        }
+        },
       );
     }
 
@@ -355,7 +355,7 @@ export class ArticleService {
       currentPage,
       pageSize,
       sortField,
-      sortOrder
+      sortOrder,
     );
 
     const [articleList, total] = await Promise.all([
@@ -382,14 +382,17 @@ export class ArticleService {
     const tags: Array<Omit<Tag, keyof BaseEntity> & { articleId: string }> =
       await tagsQueryBuilder.getRawMany();
 
-    const tagMap = tags.reduce((acc, cur) => {
-      const { articleId, ...tag } = cur;
-      if (!acc[articleId]) {
-        acc[articleId] = [];
-      }
-      acc[articleId].push(tag);
-      return acc;
-    }, {} as { [key: string]: Array<Omit<Tag, keyof BaseEntity>> });
+    const tagMap = tags.reduce(
+      (acc, cur) => {
+        const { articleId, ...tag } = cur;
+        if (!acc[articleId]) {
+          acc[articleId] = [];
+        }
+        acc[articleId].push(tag);
+        return acc;
+      },
+      {} as { [key: string]: Array<Omit<Tag, keyof BaseEntity>> },
+    );
 
     const pageArticleList = articleList.map((item) => ({
       ...item,
@@ -435,7 +438,7 @@ export class ArticleService {
     articleId: string,
     flagKey: T,
     value: Article[T],
-    version: number
+    version: number,
   ) {
     const result = await this.articleRepository.update(
       {
@@ -444,14 +447,14 @@ export class ArticleService {
       },
       {
         [flagKey]: value,
-      }
+      },
     );
     if (result.affected === 0) {
       throw new ConflictException(
         ApiJsonResult.error(
           ARTICLE_ERROR.ARTICLE_VERSION_CONFLICT,
-          'Article version conflict'
-        )
+          'Article version conflict',
+        ),
       );
     }
   }
@@ -490,15 +493,15 @@ export class ArticleService {
           previewUrl,
           isTop,
           isFire,
-        }
+        },
       );
 
       if (updateResult.affected === 0) {
         throw new ConflictException(
           ApiJsonResult.error(
             ARTICLE_ERROR.ARTICLE_VERSION_CONFLICT,
-            'Article version conflict'
-          )
+            'Article version conflict',
+          ),
         );
       }
 
@@ -527,7 +530,7 @@ export class ArticleService {
           tagIds.map((tagId) => ({
             articleId: id,
             tagId,
-          }))
+          })),
         );
       }
 
@@ -551,7 +554,7 @@ export class ArticleService {
   } {
     const reg = new RegExp(
       `!\\[${ARTICLE_IMAGE_PREFIX}(\\d+)\\]\\((.*?)\\)`,
-      'g'
+      'g',
     );
     const images = {};
     let result;

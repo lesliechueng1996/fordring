@@ -1,6 +1,6 @@
 import { GetAlbumRes } from '@fordring/api-type';
 import { ApiProperty } from '@nestjs/swagger';
-import { Album } from 'src/entities/album.entity';
+import { Album } from 'src/entities';
 
 export class GetAlbumResDto implements GetAlbumRes {
   @ApiProperty({ description: '图册id' })
