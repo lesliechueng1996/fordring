@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { memo } from 'react';
 import routes from '@/routes';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import ThemeButton from './ThemeButton';
@@ -36,4 +35,4 @@ function AppHeader() {
   );
 }
 
-export default memo(AppHeader);
+export default AppHeader;

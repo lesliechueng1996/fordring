@@ -1,5 +1,7 @@
-import FlowbarLayout from '../components/FlowbarLayout';
+import AppHeader from '@/components/AppHeader';
+import FloatButtonLayout from '../components/FloatButtonLayout';
 import './global.css';
+import AsideMenu from '@/components/AsideMenu';
 
 export const metadata = {
   title: 'Fordring Blog',
@@ -14,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-deep-background overflow-x-hidden">
-        <FlowbarLayout>{children}</FlowbarLayout>
+        <FloatButtonLayout aside={<AsideMenu />}>
+          <AppHeader />
+          {children}
+        </FloatButtonLayout>
       </body>
     </html>
   );
