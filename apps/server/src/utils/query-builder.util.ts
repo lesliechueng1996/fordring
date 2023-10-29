@@ -1,34 +1,28 @@
-import { SelectQueryBuilder } from 'typeorm';
-
-export function withPageQuery<T>(
-  queryBuilder: SelectQueryBuilder<T>,
+export function generatePageAndOrderQuery(
   currentPage: number,
   pageSize: number,
-) {
-  return queryBuilder.limit(pageSize).offset((currentPage - 1) * pageSize);
-}
-
-export function withOrderQuery<T>(
-  queryBuilder: SelectQueryBuilder<T>,
   sortField: string | null | undefined,
   sortOrder: 'DESC' | 'ASC' | '' | null | undefined,
-) {
+): {
+  take: number;
+  skip: number;
+  orderBy?: {
+    [key: string]: 'asc' | 'desc';
+  };
+} {
+  const paginationQuery = {
+    take: pageSize,
+    skip: (currentPage - 1) * pageSize,
+  };
+
   if (sortField && sortOrder) {
-    return queryBuilder.orderBy(sortField, sortOrder);
+    return {
+      ...paginationQuery,
+      orderBy: {
+        [sortField]: sortOrder.toLowerCase() as 'asc' | 'desc',
+      },
+    };
   }
-  return queryBuilder;
-}
 
-export function withPageAndOrderQuery<T>(
-  queryBuilder: SelectQueryBuilder<T>,
-  currentPage: number,
-  pageSize: number,
-  sortField: string | null | undefined,
-  sortOrder: 'DESC' | 'ASC' | '' | null | undefined,
-) {
-  return withOrderQuery(
-    withPageQuery(queryBuilder, currentPage, pageSize),
-    sortField,
-    sortOrder,
-  );
+  return paginationQuery;
 }

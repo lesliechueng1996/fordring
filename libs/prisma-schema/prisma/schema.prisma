@@ -3,6 +3,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 model User {
   id            String    @id @default(uuid())
   email         String    @unique @db.VarChar(128)
@@ -18,7 +22,7 @@ model User {
   description   String?   @db.VarChar(512)
   createTime    DateTime  @default(now()) @map("create_time")
   updateTime    DateTime  @default(now()) @map("update_time")
-  version       Int
+  version       Int       @default(0)
 
   @@map("t_user")
 }
@@ -31,7 +35,7 @@ model Album {
   previewUrl  String?  @map("preview_url") @db.VarChar(256)
   createTime  DateTime @default(now()) @map("create_time")
   updateTime  DateTime @default(now()) @map("update_time")
-  version     Int
+  version     Int      @default(0)
 
   pictures Picture[]
 
@@ -52,7 +56,7 @@ model Article {
   isDraft    Boolean  @default(false) @map("is_draft")
   createTime DateTime @default(now()) @map("create_time")
   updateTime DateTime @default(now()) @map("update_time")
-  version    Int
+  version    Int      @default(0)
 
   category Category? @relation(fields: [categoryId], references: [id])
   tags     Tag[]
@@ -66,7 +70,7 @@ model Category {
   categoryName String   @map("category_name") @db.VarChar(32)
   createTime   DateTime @default(now()) @map("create_time")
   updateTime   DateTime @default(now()) @map("update_time")
-  version      Int
+  version      Int      @default(0)
 
   articles Article[]
 
@@ -82,7 +86,7 @@ model Picture {
   storageKey  String   @map("storage_key") @db.VarChar(128)
   createTime  DateTime @default(now()) @map("create_time")
   updateTime  DateTime @default(now()) @map("update_time")
-  version     Int
+  version     Int      @default(0)
 
   album    Album     @relation(fields: [albumId], references: [id])
   articles Article[]
@@ -96,7 +100,7 @@ model Tag {
   color      String   @db.VarChar(16)
   createTime DateTime @default(now()) @map("create_time")
   updateTime DateTime @default(now()) @map("update_time")
-  version    Int
+  version    Int      @default(0)
 
   articles Article[]
 

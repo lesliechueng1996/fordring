@@ -3,7 +3,7 @@ import { PictureService } from './picture.service';
 import { PictureController } from './picture.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Picture } from 'src/entities';
-import { QiniuService } from 'src/providers/QiniuService';
+import { QiniuService } from 'src/providers/qiniu.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Picture])],

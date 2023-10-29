@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Picture } from 'src/entities';
 import { Repository } from 'typeorm';
 import { CreatePictureReqDto } from './dto/create-picture.dto';
-import { QiniuService } from 'src/providers/QiniuService';
+import { QiniuService } from 'src/providers/qiniu.service';
 
 @Injectable()
 export class PictureService {

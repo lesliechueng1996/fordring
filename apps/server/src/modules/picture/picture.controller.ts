@@ -12,7 +12,7 @@ import { PictureService } from './picture.service';
 import {
   QiniuService,
   UPLOAD_TOKEN_EXPIRE_SECONDS,
-} from 'src/providers/QiniuService';
+} from 'src/providers/qiniu.service';
 import { AuthGuard } from 'src/guards/AuthGuard';
 import {
   ApiBadRequestResponse,

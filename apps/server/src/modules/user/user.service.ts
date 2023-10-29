@@ -4,12 +4,12 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User, UserStatus } from 'src/entities';
-import { Repository } from 'typeorm';
+import { User } from 'src/entities';
 import { encryptPassword, validatePassword } from 'src/utils/password.util';
 import { AUTH_ERROR } from 'src/constants/error.const';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
+import { UserRepository } from 'src/repositories/user.repository';
+import { UserStatus } from 'src/constants/fordring.const';
 
 const MAX_ERROR_COUNT = 5;
 
@@ -17,17 +17,14 @@ const MAX_ERROR_COUNT = 5;
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
+  constructor(private readonly usersRepository: UserRepository) {}
 
   async validateUser(
     email: string,
     password: string,
     ip: string,
   ): Promise<User> {
-    const user = await this.usersRepository.findOneBy({ email });
+    const user = await this.usersRepository.findByEmail(email);
     if (!user) {
       // User not found
       this.logger.error(`User not found: ${email}`);
@@ -70,7 +67,7 @@ export class UserService {
 
     // Success, reset error count, update last_login_time and last_login_ip
     this.logger.log(`Login success: ${email}`);
-    await this.usersRepository.update(
+    await this.usersRepository.updateById(
       {
         id: user.id,
         version: user.version,
@@ -85,7 +82,7 @@ export class UserService {
   }
 
   async updateUserErrorInfo(user: User, ip: string) {
-    await this.usersRepository.update(
+    await this.usersRepository.updateById(
       {
         id: user.id,
         version: user.version,
@@ -99,7 +96,7 @@ export class UserService {
   }
 
   async lockUser(user: User) {
-    await this.usersRepository.update(
+    await this.usersRepository.updateById(
       {
         id: user.id,
         version: user.version,
@@ -120,6 +117,6 @@ export class UserService {
   }
 
   async getUserById(id: string) {
-    return await this.usersRepository.findOneBy({ id });
+    return await this.usersRepository.findById(id);
   }
 }
