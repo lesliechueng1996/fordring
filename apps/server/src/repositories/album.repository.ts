@@ -2,7 +2,9 @@ import { Album } from 'src/entities';
 import { AbstractRepository } from './abstract.repository';
 import { PrismaService } from 'src/providers/prisma.service';
 import { Prisma } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class AlbumRepository extends AbstractRepository<Album, number> {
   constructor(protected prisma: PrismaService) {
     super(prisma, 'album');
