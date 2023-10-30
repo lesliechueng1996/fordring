@@ -1,6 +1,6 @@
 import qs from 'qs';
 import { sendRequest } from './http-request';
-import { PageTagItem, PageTagRes } from '@fordring/api-type';
+import type { PageTagItem, PageTagRes } from '@fordring/api-type';
 
 export const TAG_ALREADY_EXIST = 50001;
 export const CREATE_TAG_FAILED = 50002;
@@ -42,7 +42,7 @@ export async function searchTagByPage(
   currentPage: number,
   pageSize: number,
   sortField: string | undefined,
-  sortOrder: string | null
+  sortOrder: string | null,
 ) {
   try {
     const queryString = qs.stringify({
@@ -74,7 +74,7 @@ export async function updateTag(
   id: number,
   tagName: string,
   color: string,
-  version: number
+  version: number,
 ) {
   try {
     const data = await sendRequest(`/tag/${id}`, {

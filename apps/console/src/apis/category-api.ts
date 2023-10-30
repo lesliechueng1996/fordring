@@ -1,4 +1,4 @@
-import { PageCategoryRes, PageCategoryItem } from '@fordring/api-type';
+import type { PageCategoryRes, PageCategoryItem } from '@fordring/api-type';
 import { sendRequest } from './http-request';
 import qs from 'qs';
 
@@ -24,7 +24,7 @@ export function getErrorMsg(code: number) {
 }
 
 export async function createCategory(
-  categoryName: string
+  categoryName: string,
 ): Promise<ApiJsonResult<unknown>> {
   try {
     const data: ApiJsonResult<unknown> = await sendRequest('/category', {
@@ -46,7 +46,7 @@ export async function searchCategoryByPage(
   currentPage: number,
   pageSize: number,
   sortField: string | undefined,
-  sortOrder: string | null
+  sortOrder: string | null,
 ) {
   try {
     const queryString = qs.stringify({
@@ -86,7 +86,7 @@ export async function getCategoryById(id: number) {
 export async function updateCategory(
   id: number,
   categoryName: string,
-  version: number
+  version: number,
 ) {
   try {
     const data = await sendRequest(`/category/${id}`, {

@@ -1,12 +1,12 @@
 import qs from 'qs';
 import { sendRequest } from './http-request';
-import {
+import type {
   PageArticleReq,
   PageArticleItem,
   PageArticleRes,
 } from '@fordring/api-type';
 
-export {
+export type {
   GetArticleRes,
   PageArticleReq,
   PageArticleItem,
@@ -27,7 +27,7 @@ export async function saveDraftArticle(title: string, content: string) {
 export async function updateDraftArticle(
   id: string,
   title: string,
-  content: string
+  content: string,
 ) {
   try {
     const data = await sendRequest(`/article/draft/${id}`, {
@@ -65,7 +65,7 @@ export async function saveArticle(article: SaveArticleReq) {
 
 export async function draftToArticle(
   article: SaveArticleReq,
-  articleId: string
+  articleId: string,
 ) {
   try {
     const data = await sendRequest(`/article/${articleId}`, {
@@ -106,7 +106,7 @@ export async function deleteArticle(id: string) {
 export async function updateArticleTop(
   id: string,
   isTop: boolean,
-  version: number
+  version: number,
 ) {
   try {
     const data = await sendRequest(`/article/${id}/top`, {
@@ -122,7 +122,7 @@ export async function updateArticleTop(
 export async function updateArticleFire(
   id: string,
   isFire: boolean,
-  version: number
+  version: number,
 ) {
   try {
     const data = await sendRequest(`/article/${id}/fire`, {
@@ -138,7 +138,7 @@ export async function updateArticleFire(
 export async function updateArticleStatus(
   id: string,
   status: number,
-  version: number
+  version: number,
 ) {
   try {
     const data = await sendRequest(`/article/${id}/status`, {
