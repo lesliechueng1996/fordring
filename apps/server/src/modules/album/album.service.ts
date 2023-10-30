@@ -4,50 +4,49 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { ALBUM_ERROR } from 'src/constants/error.const';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
-import { Album } from 'src/entities';
-import { Not, Repository, UpdateResult } from 'typeorm';
 import { CreateAlbumReqDto } from './dto/create-album.dto';
 import { GetAlbumResDto } from './dto/get-album.dto';
 import { UpdateAlbumDtoReq } from './dto/update-album.dto';
 import { PictureService } from '../picture/picture.service';
-
-type AlbumWithPictureCount = Album & { pictureCount: number };
+import { AlbumRepository } from 'src/repositories/album.repository';
+import { Prisma } from '@prisma/client';
+import { PRISMA_ERROR } from 'src/constants/fordring.const';
 
 @Injectable()
 export class AlbumService {
   private readonly logger: Logger = new Logger(AlbumService.name);
 
   constructor(
-    @InjectRepository(Album)
-    private albumRepository: Repository<Album>,
+    private albumRepository: AlbumRepository,
     private pictureService: PictureService,
   ) {}
 
   async countByDisplayName(displayName: string, excludeId?: number) {
-    const where = {
+    const where: Prisma.AlbumWhereInput = {
       displayName,
     };
     if (excludeId) {
-      where['id'] = Not(excludeId);
+      where.id = {
+        not: excludeId,
+      };
     }
 
-    return this.albumRepository.count({
-      where,
-    });
+    return this.albumRepository.count(where);
   }
 
   async countByFolderName(folderName: string, excludeId?: number) {
-    const where = {
+    const where: Prisma.AlbumWhereInput = {
       folderName,
     };
     if (excludeId) {
-      where['id'] = Not(excludeId);
+      where.id = {
+        not: excludeId,
+      };
     }
 
-    return this.albumRepository.countBy(where);
+    return this.albumRepository.count(where);
   }
 
   async isDisplayNameOrFolderNameExist(
@@ -105,28 +104,26 @@ export class AlbumService {
   }
 
   async allAlbums() {
-    const result: AlbumWithPictureCount[] = await this.albumRepository.query(`
-      select 
-        album.id as "id",
-        album.display_name as "displayName",
-        album.folder_name as "folderName",
-        album.description as "description",
-        album.preview_url as "previewUrl",
-        album.version as "version",
-        album.create_time as "createTime",
-        album.update_time as "updateTime",
-        t1.picture_count as "pictureCount"
-      from t_album as album 
-      left join (
-        select album_id, count(*) as picture_count from t_picture group by album_id
-      ) t1 on album.id = t1.album_id
-    `);
+    const albums = await this.albumRepository.getAlbumPrisma().findMany({
+      include: {
+        _count: {
+          select: {
+            pictures: true,
+          },
+        },
+      },
+    });
 
-    return result.map((album) => new GetAlbumResDto(album, album.pictureCount));
+    return albums.map((album) => {
+      const {
+        _count: { pictures },
+      } = album;
+      return new GetAlbumResDto(album, pictures);
+    });
   }
 
   async getAlbumById(id: number) {
-    const album = await this.albumRepository.findOneBy({ id });
+    const album = await this.albumRepository.findById(id);
     const pictureCount = await this.pictureService.countByAlbumId(id);
     if (!album) {
       this.logger.error(`album id: ${id} not found`);
@@ -140,10 +137,8 @@ export class AlbumService {
   async updateAlbumById(id: number, dto: UpdateAlbumDtoReq) {
     const { displayName, folderName, description, previewUrl, version } = dto;
     await this.isDisplayNameOrFolderNameExist(displayName, folderName, id);
-    let result: UpdateResult;
-
     try {
-      result = await this.albumRepository.update(
+      await this.albumRepository.updateById(
         {
           id,
           version,
@@ -157,21 +152,22 @@ export class AlbumService {
       );
     } catch (e) {
       this.logger.error(e);
+
+      if (e.code === PRISMA_ERROR.NOT_FOUNT) {
+        this.logger.error(
+          `album ${id} not found or version ${version} not match`,
+        );
+        throw new ConflictException(
+          ApiJsonResult.error(
+            ALBUM_ERROR.ALBUM_VERSION_CONFLICT,
+            'Album not found or version not match',
+          ),
+        );
+      }
+
       throw ApiJsonResult.error(
         ALBUM_ERROR.UPDATE_ALBUM_FAILED,
         'Update album failed',
-      );
-    }
-
-    if (result.affected === 0) {
-      this.logger.error(
-        `album ${id} not found or version ${version} not match`,
-      );
-      throw new ConflictException(
-        ApiJsonResult.error(
-          ALBUM_ERROR.ALBUM_VERSION_CONFLICT,
-          'Album not found or version not match',
-        ),
       );
     }
   }
@@ -184,15 +180,11 @@ export class AlbumService {
         ApiJsonResult.error(ALBUM_ERROR.ALBUM_HAS_PICTURE, 'Album has picture'),
       );
     }
-    await this.albumRepository.delete({ id });
+    await this.albumRepository.deleteById(id);
   }
 
   async albumToOptions() {
-    const albums = await this.albumRepository.find({
-      order: {
-        createTime: 'DESC',
-      },
-    });
+    const albums = await this.albumRepository.findAllOrderByCreateTimeDesc();
     return albums.map((album) => ({
       label: album.displayName,
       value: String(album.id),

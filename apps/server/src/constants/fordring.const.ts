@@ -8,6 +8,11 @@ export const UserStatus = {
   ENABLED: 1,
 };
 
+export const ArticleStatus = {
+  HIDDEN: 0,
+  SHOW: 1,
+};
+
 export const PRISMA_ERROR = {
   NOT_FOUNT: 'P2025',
 };

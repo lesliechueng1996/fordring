@@ -17,7 +17,7 @@ const MAX_ERROR_COUNT = 5;
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
-  constructor(private readonly usersRepository: UserRepository) {}
+  constructor(private usersRepository: UserRepository) {}
 
   async validateUser(
     email: string,

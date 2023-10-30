@@ -67,7 +67,7 @@ model Article {
 
 model Category {
   id           Int      @id @default(autoincrement())
-  categoryName String   @map("category_name") @db.VarChar(32)
+  categoryName String   @unique @map("category_name") @db.VarChar(32)
   createTime   DateTime @default(now()) @map("create_time")
   updateTime   DateTime @default(now()) @map("update_time")
   version      Int      @default(0)
@@ -96,7 +96,7 @@ model Picture {
 
 model Tag {
   id         Int      @id @default(autoincrement())
-  tagName    String   @map("tag_name") @db.VarChar(32)
+  tagName    String   @unique @map("tag_name") @db.VarChar(32)
   color      String   @db.VarChar(16)
   createTime DateTime @default(now()) @map("create_time")
   updateTime DateTime @default(now()) @map("update_time")

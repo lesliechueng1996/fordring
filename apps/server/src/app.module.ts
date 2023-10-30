@@ -9,6 +9,7 @@ import { TagModule } from './modules/tag/tag.module';
 import { ArticleModule } from './modules/article/article.module';
 import RedisConfigModule from './configs/redis-cache.config';
 import JwtModule from './configs/jwt.config';
+import { GlobalModule } from './modules/global.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import JwtModule from './configs/jwt.config';
     PictureModule,
     TagModule,
     ArticleModule,
+    GlobalModule,
   ],
 })
 export class AppModule {}

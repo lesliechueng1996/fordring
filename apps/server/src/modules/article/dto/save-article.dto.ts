@@ -7,7 +7,7 @@ import {
   MaxLength,
   ValidateIf,
 } from 'class-validator';
-import { ArticleStatus } from 'src/entities';
+import { ArticleStatus } from 'src/constants/fordring.const';
 
 export class SaveArticleDtoReq {
   @ApiProperty({ description: '文章标题' })
@@ -23,7 +23,7 @@ export class SaveArticleDtoReq {
     enum: [ArticleStatus.HIDDEN, ArticleStatus.SHOW],
   })
   @IsEnum([ArticleStatus.HIDDEN, ArticleStatus.SHOW])
-  status: ArticleStatus;
+  status: number;
 
   @ApiProperty({ description: '文章分类ID', required: false })
   @IsNumber()

@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { Optional } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/providers/prisma.service';
 import hasOwnProperty from 'src/utils/has-own-property.util';
@@ -72,5 +73,13 @@ export class AbstractRepository<T extends BaseSchema<PV>, PV> {
         id,
       },
     });
+  }
+
+  async transaction<T>(arr: Prisma.PrismaPromise<T>[]) {
+    return this.prisma.$transaction(arr);
+  }
+
+  getPrisma() {
+    return this.prisma;
   }
 }
