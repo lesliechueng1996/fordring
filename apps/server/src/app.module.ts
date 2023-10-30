@@ -7,14 +7,13 @@ import { AlbumModule } from './modules/album/album.module';
 import { PictureModule } from './modules/picture/picture.module';
 import { TagModule } from './modules/tag/tag.module';
 import { ArticleModule } from './modules/article/article.module';
-import DatabaseConfigModule from './configs/database.config';
 import RedisConfigModule from './configs/redis-cache.config';
 import JwtModule from './configs/jwt.config';
+import { GlobalModule } from './modules/global.module';
 
 @Module({
   imports: [
     EnvConfigModule,
-    DatabaseConfigModule,
     RedisConfigModule,
     JwtModule,
     AuthModule,
@@ -24,6 +23,7 @@ import JwtModule from './configs/jwt.config';
     PictureModule,
     TagModule,
     ArticleModule,
+    GlobalModule,
   ],
 })
 export class AppModule {}

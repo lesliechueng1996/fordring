@@ -1,19 +1,16 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { CATEGORY_ERROR } from 'src/constants/error.const';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
-import { Category } from 'src/entities';
-import { Repository } from 'typeorm';
 import { PageCategoryReqDto } from './dto/page-category.dto';
-import { withPageAndOrderQuery } from 'src/utils/query-builder.util';
 import { CategoryOptionsResDto } from './dto/category-options.dto';
+import { CategoryRepository } from 'src/repositories/category.repository';
+import { Prisma } from '@prisma/client';
+import { generatePageAndOrderQuery } from 'src/utils/query-builder.util';
+import { PRISMA_ERROR } from 'src/constants/fordring.const';
 
 @Injectable()
 export class CategoryService {
-  constructor(
-    @InjectRepository(Category)
-    private categoryRepository: Repository<Category>,
-  ) {}
+  constructor(private categoryRepository: CategoryRepository) {}
 
   private readonly logger: Logger = new Logger(CategoryService.name);
 
@@ -30,14 +27,14 @@ export class CategoryService {
   }
 
   async countByCategoryName(categoryName: string) {
-    return await this.categoryRepository.countBy({ categoryName });
+    return await this.categoryRepository.countByCategoryName(categoryName);
   }
 
   async createCategory(categoryName: string) {
     await this.isCategoryNameExist(categoryName);
 
     try {
-      await this.categoryRepository.insert({
+      await this.categoryRepository.save({
         categoryName,
       });
     } catch (error) {
@@ -51,17 +48,15 @@ export class CategoryService {
   async searchCategoriesByPage(query: PageCategoryReqDto) {
     const { categoryName, currentPage, pageSize, sortField, sortOrder } = query;
 
-    let queryBuilder = this.categoryRepository.createQueryBuilder();
+    const where: Prisma.CategoryWhereInput = {};
+
     if (categoryName) {
-      queryBuilder = queryBuilder.where('category_name like :categoryName', {
-        categoryName: `%${categoryName}%`,
-      });
+      where.categoryName = {
+        contains: categoryName,
+      };
     }
 
-    const countQueryBuilder = queryBuilder.clone();
-
-    queryBuilder = withPageAndOrderQuery(
-      queryBuilder,
+    const { skip, take, orderBy } = generatePageAndOrderQuery(
       currentPage,
       pageSize,
       sortField,
@@ -69,8 +64,8 @@ export class CategoryService {
     );
 
     const [categoryList, total] = await Promise.all([
-      queryBuilder.getMany(),
-      countQueryBuilder.getCount(),
+      this.categoryRepository.searchByPage(where, take, skip, orderBy),
+      this.categoryRepository.count(where),
     ]);
 
     const list = categoryList.map((category) => ({
@@ -87,21 +82,18 @@ export class CategoryService {
   }
 
   async deleteCategory(id: number) {
-    await this.categoryRepository.delete(id);
+    await this.categoryRepository.deleteById(id);
   }
 
   getCategoryById(id: number) {
-    return this.categoryRepository.findOneBy({
-      id,
-    });
+    return this.categoryRepository.findById(id);
   }
 
   async updateCategory(id: number, categoryName: string, version: number) {
     await this.isCategoryNameExist(categoryName);
 
-    let result;
     try {
-      result = await this.categoryRepository.update(
+      await this.categoryRepository.updateById(
         {
           id,
           version,
@@ -113,26 +105,26 @@ export class CategoryService {
     } catch (e) {
       this.logger.error(`Update category failed, id: ${id}`);
 
+      if (e.code === PRISMA_ERROR.NOT_FOUNT) {
+        this.logger.error(`Category version conflict, id: ${id}`);
+
+        throw new ConflictException(
+          ApiJsonResult.error(
+            CATEGORY_ERROR.CATEGORY_VERSION_CONFLICT,
+            'Category version conflict',
+          ),
+        );
+      }
+
       throw ApiJsonResult.error(
         CATEGORY_ERROR.UPDATE_CATEGORY_FAILED,
         'Update category failed',
       );
     }
-
-    if (result.affected === 0) {
-      this.logger.error(`Category version conflict, id: ${id}`);
-
-      throw new ConflictException(
-        ApiJsonResult.error(
-          CATEGORY_ERROR.CATEGORY_VERSION_CONFLICT,
-          'Category version conflict',
-        ),
-      );
-    }
   }
 
   async categoryToOptions(): Promise<CategoryOptionsResDto[]> {
-    const categoryList = await this.categoryRepository.find();
+    const categoryList = await this.categoryRepository.findAll();
 
     return categoryList.map((category) => ({
       label: category.categoryName,

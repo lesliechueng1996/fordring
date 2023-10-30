@@ -49,3 +49,6 @@ logs
 
 # Next.js
 .next
+
+# Prisma
+.env

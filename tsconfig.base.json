@@ -15,8 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@fordring/api-type": ["libs/api-type/src/index.ts"],
-      "@fordring/db-entity": ["libs/db-entity/src/index.ts"]
+      "@fordring/api-type": ["libs/api-type/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

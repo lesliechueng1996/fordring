@@ -1,4 +1,4 @@
-import {
+import type {
   AllPictureItem,
   AllPicturesRes,
   GetAlbumRes,
@@ -37,7 +37,7 @@ export const createAlbum = async (
   displayName: string,
   folderName: string,
   previewUrl: string,
-  description: string
+  description: string,
 ) => {
   try {
     const data = await sendRequest('/album', {
@@ -79,7 +79,7 @@ export const updateAlbum = async (
   folderName: string,
   previewUrl: string,
   description: string,
-  version: number
+  version: number,
 ) => {
   try {
     const data = await sendRequest(`/album/${id}`, {

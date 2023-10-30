@@ -54,7 +54,7 @@ import { UpdateArticleDtoReq } from './dto/update-article.dto';
 export class ArticleController {
   constructor(
     private readonly articleService: ArticleService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {}
 
   @Post('/draft')
@@ -63,7 +63,7 @@ export class ArticleController {
   @ApiJsonResultResponse(SaveDraftDtoRes)
   async saveDraft(
     @Body() body: SaveDraftDtoReq,
-    @Req() req: Request
+    @Req() req: Request,
   ): Promise<SaveDraftDtoRes> {
     const userId: string = req[USER_ID_KEY];
     const { title, content } = body;
@@ -71,7 +71,7 @@ export class ArticleController {
     const article = await this.articleService.saveDraftArticle(
       title,
       content,
-      user
+      user,
     );
     return {
       id: article.id,
@@ -89,8 +89,8 @@ export class ArticleController {
       throw new NotFoundException(
         ApiJsonResult.error(
           ARTICLE_ERROR.ARTICLE_NOT_FOUND,
-          'Article not found'
-        )
+          'Article not found',
+        ),
       );
     }
 
@@ -117,7 +117,7 @@ export class ArticleController {
   async draftToArticle(
     @Param('id') id: string,
     @Body() body: SaveArticleDtoReq,
-    @Req() req: Request
+    @Req() req: Request,
   ) {
     const userId: string = req[USER_ID_KEY];
     const user = await this.userService.getUserById(userId);
@@ -133,7 +133,7 @@ export class ArticleController {
   @ApiNotFoundResponse({ description: '文章不存在' })
   async updateArticle(
     @Param('id') id: string,
-    @Body() body: UpdateArticleDtoReq
+    @Body() body: UpdateArticleDtoReq,
   ) {
     await this.articleService.updateArticle(id, body);
   }
@@ -159,7 +159,7 @@ export class ArticleController {
   @ApiConflictResponse({ description: '更新失败，文章版本不一致' })
   async updateArticleTop(
     @Param('id') id: string,
-    @Body() body: UpdateArticleTopFlagDtoReq
+    @Body() body: UpdateArticleTopFlagDtoReq,
   ) {
     const { isTop, version } = body;
     await this.articleService.updateArticleField(id, 'isTop', isTop, version);
@@ -171,7 +171,7 @@ export class ArticleController {
   @ApiConflictResponse({ description: '更新失败，文章版本不一致' })
   async updateArticleFire(
     @Param('id') id: string,
-    @Body() body: UpdateArticleFireFlagDtoReq
+    @Body() body: UpdateArticleFireFlagDtoReq,
   ) {
     const { isFire, version } = body;
     await this.articleService.updateArticleField(id, 'isFire', isFire, version);
@@ -183,7 +183,7 @@ export class ArticleController {
   @ApiConflictResponse({ description: '更新失败，文章版本不一致' })
   async updateArticleStatus(
     @Param('id') id: string,
-    @Body() body: UpdateArticleStatusDtoReq
+    @Body() body: UpdateArticleStatusDtoReq,
   ) {
     const { status, version } = body;
     await this.articleService.updateArticleField(id, 'status', status, version);

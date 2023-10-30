@@ -1,23 +1,25 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { TAG_ERROR } from 'src/constants/error.const';
 import { ApiJsonResult } from 'src/dto/api-json-result.dto';
-import { Tag } from 'src/entities';
-import { Not, Repository, UpdateResult } from 'typeorm';
 import { PageTagReqDto, PageTagResItem } from './dto/page-tag.dto';
-import { withPageAndOrderQuery } from 'src/utils/query-builder.util';
+import { generatePageAndOrderQuery } from 'src/utils/query-builder.util';
 import { TagOptionsDtoRes } from './dto/tag-options.dto';
+import { TagRepository } from 'src/repositories/tag.repository';
+import { Prisma } from '@prisma/client';
+import { PRISMA_ERROR } from 'src/constants/fordring.const';
 
 @Injectable()
 export class TagService {
   private readonly logger: Logger = new Logger(TagService.name);
 
-  constructor(@InjectRepository(Tag) private tagRepository: Repository<Tag>) {}
+  constructor(private tagRepository: TagRepository) {}
 
   async validateTagNameExists(tagName: string, exceptedId?: number) {
-    const options = { where: { tagName } };
+    const options: { where: Prisma.TagWhereInput } = { where: { tagName } };
     if (exceptedId) {
-      options.where['id'] = Not(exceptedId);
+      options.where.id = {
+        not: exceptedId,
+      };
     }
 
     const isExist = await this.tagRepository.exist(options);
@@ -31,7 +33,7 @@ export class TagService {
   async createTag(tagName: string, color: string) {
     await this.validateTagNameExists(tagName);
     try {
-      await this.tagRepository.insert({ tagName, color: color.toUpperCase() });
+      await this.tagRepository.save({ tagName, color: color.toUpperCase() });
     } catch (e) {
       this.logger.error(e);
       throw ApiJsonResult.error(
@@ -44,17 +46,15 @@ export class TagService {
   async searchTagByPage(query: PageTagReqDto) {
     const { tagName, currentPage, pageSize, sortField, sortOrder } = query;
 
-    let queryBuilder = this.tagRepository.createQueryBuilder();
+    const where: Prisma.TagWhereInput = {};
+
     if (tagName) {
-      queryBuilder = queryBuilder.where('tag_name like :tagName', {
-        tagName: `%${tagName}%`,
-      });
+      where.tagName = {
+        contains: tagName,
+      };
     }
 
-    const countQueryBuilder = queryBuilder.clone();
-
-    queryBuilder = withPageAndOrderQuery(
-      queryBuilder,
+    const { skip, take, orderBy } = generatePageAndOrderQuery(
       currentPage,
       pageSize,
       sortField,
@@ -62,8 +62,8 @@ export class TagService {
     );
 
     const [tagList, total] = await Promise.all([
-      queryBuilder.getMany(),
-      countQueryBuilder.getCount(),
+      this.tagRepository.searchByPage(where, take, skip, orderBy),
+      this.tagRepository.count(where),
     ]);
 
     const list: PageTagResItem[] = tagList.map(
@@ -75,20 +75,18 @@ export class TagService {
 
   async removeTag(id: number) {
     // TODO check tag is used by article
-    return this.tagRepository.delete(id);
+    return this.tagRepository.deleteById(id);
   }
 
   async getTag(id: number) {
-    return this.tagRepository.findOneBy({ id });
+    return this.tagRepository.findById(id);
   }
 
   async updateTag(id: number, tagName: string, color: string, version: number) {
     await this.validateTagNameExists(tagName, id);
 
-    let result: UpdateResult;
-
     try {
-      result = await this.tagRepository.update(
+      await this.tagRepository.updateById(
         {
           id,
           version,
@@ -100,25 +98,28 @@ export class TagService {
       );
     } catch (e) {
       this.logger.error(e);
+
+      if (e.code === PRISMA_ERROR.NOT_FOUNT) {
+        this.logger.error(
+          `tag ${id} not found or version ${version} not match`,
+        );
+        throw new ConflictException(
+          ApiJsonResult.error(
+            TAG_ERROR.TAG_VERSION_CONFLICT,
+            'Tag not found or version not match',
+          ),
+        );
+      }
+
       throw ApiJsonResult.error(
         TAG_ERROR.UPDATE_TAG_FAILED,
         'Update tag failed',
       );
     }
-
-    if (result.affected === 0) {
-      this.logger.error(`tag ${id} not found or version ${version} not match`);
-      throw new ConflictException(
-        ApiJsonResult.error(
-          TAG_ERROR.TAG_VERSION_CONFLICT,
-          'Tag not found or version not match',
-        ),
-      );
-    }
   }
 
   async tagToOptions(): Promise<TagOptionsDtoRes[]> {
-    const tagList = await this.tagRepository.find();
+    const tagList = await this.tagRepository.findAll();
     return tagList.map((tag) => ({
       label: tag.tagName,
       value: tag.id.toString(),
