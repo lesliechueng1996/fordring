@@ -1,3 +1,9 @@
+import AppBanner from '@/components/AppBanner';
+
 export default async function Index() {
-  return <div className="text-red-500 h-96">Next</div>;
+  return (
+    <main className="space-y-10 pb-10 pt-10">
+      <AppBanner />
+    </main>
+  );
 }
