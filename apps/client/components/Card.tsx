@@ -1,3 +1,5 @@
+import formatChineseDate from '@/utils/formatChineseDate';
+
 type Tag = {
   id: number;
   tagName: string;
@@ -5,6 +7,7 @@ type Tag = {
 };
 
 type Props = {
+  id: string;
   label: string;
   labelComments: Tag[];
   title: string;
@@ -12,7 +15,7 @@ type Props = {
   previewUrl: string | null;
   avatarUrl?: string;
   avatarName: string;
-  time: string;
+  time: Date;
   horizontal?: boolean;
 };
 
@@ -26,14 +29,15 @@ function Card({
   time,
   horizontal = false,
 }: Props) {
-  const backgroundImageUrl = previewUrl ?? '/images/banner-temp.jpeg';
-
   return (
     <div className="relative h-full bg-label">
       <div
-        className={`absolute w-full h-2/3 bg-[url('${backgroundImageUrl}')] bg-no-repeat bg-cover ${
+        className={`absolute w-full h-2/3  bg-no-repeat bg-cover ${
           !horizontal && 'lg:w-2/3 lg:h-full'
         }`}
+        style={{
+          backgroundImage: `url('${previewUrl || '/images/banner-temp.jpeg'}')`,
+        }}
       />
       <div
         className={`absolute w-full h-1/6 top-[16.67%] ${
@@ -94,7 +98,9 @@ function Card({
               Z
             </div>
             <span className="text-content-main">{avatarName}</span>
-            <span className="text-content-sub text-sm">发布于 {time}</span>
+            <span className="text-content-sub text-sm">
+              发布于 {formatChineseDate(time)}
+            </span>
           </div>
         </div>
       </div>
