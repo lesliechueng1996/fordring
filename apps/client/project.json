@@ -28,6 +28,7 @@
       "configurations": {
         "development": {
           "buildTarget": "client:build:development",
+          "port": 8080,
           "dev": true
         },
         "production": {

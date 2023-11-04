@@ -5,7 +5,8 @@
   "scripts": {
     "nx": "nx",
     "console:serve": "nx run-many --target=serve --projects=server,console",
-    "client:serve": "nx run client:serve"
+    "client:serve": "nx run client:serve",
+    "serve": "nx run-many --target=serve --projects=server,console,client"
   },
   "private": true,
   "prisma": {
@@ -111,4 +112,3 @@
     "vitest": "~0.34.6"
   }
 }
-
