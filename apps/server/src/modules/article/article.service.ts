@@ -36,11 +36,6 @@ export class ArticleService {
       author: nickName,
       content,
       status: ArticleStatus.HIDDEN,
-      category: {
-        connect: {
-          id: null,
-        },
-      },
       viewCount: 0,
       previewUrl: null,
       isTop: false,
